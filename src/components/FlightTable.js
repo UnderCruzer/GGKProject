@@ -71,7 +71,7 @@ const FlightTable = ({ data }) => {
 
 
 // 핸들러 로직
-const handleCheckboxChange = (id) => {
+const handleCheckboxChange = (id) => { 
   const nowChecked = !completionStatus[id];
 
   setCompletionStatus((prev) => ({
