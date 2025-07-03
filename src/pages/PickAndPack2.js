@@ -1,7 +1,7 @@
 import React from 'react';
 import FlightTable from '../components/FlightTable';
 
-const pickPack2Data = [
+export const pickPack2Data = [
   {
     id: 1,
     flight: 'OZ 1234',

@@ -1,7 +1,7 @@
 import React from 'react';
 import FlightTable from '../components/FlightTable';
 
-const MakePack2Data = [
+export const MakePack2Data = [
     {
         id: 1,
         flight: 'OZ 9999',

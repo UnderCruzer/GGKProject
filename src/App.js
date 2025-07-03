@@ -9,6 +9,7 @@ import MakeAndPack1 from './pages/MakeAndPack1';
 import MakeAndPack2 from './pages/MakeAndPack2';
 import MakeAndPack3 from './pages/MakeAndPack3';
 import MakeAndPack4 from './pages/MakeAndPack4';
+import DashboardPage from './pages/DashboardPage';
 
 
 
@@ -28,6 +29,8 @@ function App() {
         <Route path="/make-pack2" element={<MakeAndPack2 />} />
         <Route path="/make-pack3" element={<MakeAndPack3 />} />
         <Route path="/make-pack4" element={<MakeAndPack4 />} />
+
+        <Route path="/dashboard" element={<DashboardPage />} />
         
         </Routes>
     </Router>

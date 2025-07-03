@@ -1,7 +1,7 @@
 import React from 'react';
 import FlightTable from '../components/FlightTable';
 
-const WashPack2Data = [
+export const WashPack2Data = [
     {
         id: 1,
         flight: 'VS 1231',

@@ -7,7 +7,7 @@ const MainPage = () => {
 
   return (
     <div className="landing-container">
-      <h1 ckassName="main-title">GGK Checklist 메인 페이지</h1>
+      <h1 className="main-title">GGK Checklist 메인 페이지</h1>
         <div className="department-sections">
           <div className="department-column">
             <h2>Make and Pack 부서 페이지</h2>
@@ -33,7 +33,7 @@ const MainPage = () => {
       <div className="admin-section">
         <h2>관리자 화면</h2>
         <div className="admin-buttons-container">
-          <button className="admin-button">대시보드 게시판형</button>
+          <button className="admin-button" onClick={() => navigate('/dashboard')}>대시보드 게시판형</button>
           <button className="admin-button">대시보드 UI형</button>
         </div>
       </div>
