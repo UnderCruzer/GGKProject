@@ -1,7 +1,7 @@
 import React from 'react';
 import FlightTable from '../components/FlightTable';
 
-export const pickPack1Data = [
+export const pickAndPack1Data = [
   {
     id: 1,
     flight: 'OZ 1234',
@@ -173,9 +173,8 @@ export const pickPack1Data = [
 
 const PickAndPack1 = () => (
   <div>
-
-    <h2 style={{ textAlign: 'center', marginBottom: '20px'}}>Pick and Pack 1</h2>
-    <FlightTable data={pickPack1Data} />
+    <h2 style={{ textAlign: 'center', marginTop: '20px' , marginBottom: '30px', fontSize: '24px'}}>Pick and Pack 1</h2>
+    <FlightTable data={pickAndPack1Data} />
   </div>
 );
 
