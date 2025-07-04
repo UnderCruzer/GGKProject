@@ -110,7 +110,7 @@ const DashboardTable = ({ data }) => {
             );
           })}
         </tbody>
-      </table>
+      </table> x 
     </div>
   );
 };

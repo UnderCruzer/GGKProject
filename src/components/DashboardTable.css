@@ -26,3 +26,15 @@
 .dashboard-table td {
   border: 1px solid #ccc
 }
+
+.cell-complete {
+  background-color: #c8f7c5; /* 연한 초록 */
+  color: #2e7d32;            /* 진한 초록 */
+  font-weight: bold;
+}
+
+.cell-incomplete {
+  background-color: #ffcdd2; /* 연한 빨강 */
+  color: #c62828;            /* 진한 빨강 */
+  font-weight: bold;
+}
