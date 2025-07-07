@@ -10,7 +10,7 @@ import MakeAndPack2 from './pages/MakeAndPack2';
 import MakeAndPack3 from './pages/MakeAndPack3';
 import MakeAndPack4 from './pages/MakeAndPack4';
 import DashboardPage from './pages/DashboardPage';
-
+import AdminLogin from './pages/AdminLogin';
 
 
 
@@ -32,6 +32,7 @@ function App() {
 
         <Route path="/dashboard" element={<DashboardPage />} />
         
+        <Route path="/admin-login" element={<AdminLogin />} />
         </Routes>
     </Router>
   );
