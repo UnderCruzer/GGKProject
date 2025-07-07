@@ -1,6 +1,6 @@
 < GGK project >
 
-게이트고메코리아 공모전 및 기내식 실시간 Traking Tool 제작 프로젝트
+게이트고메코리아 공모전 및 기내식 실시간 Tracking Tool 제작 프로젝트
 
 
 기간 : 7/1 ~ 8/1
