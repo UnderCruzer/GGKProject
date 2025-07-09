@@ -11,6 +11,7 @@ import MakeAndPack3 from './pages/MakeAndPack3';
 import MakeAndPack4 from './pages/MakeAndPack4';
 import DashboardPage from './pages/DashboardPage';
 import AdminLogin from './pages/AdminLogin';
+import FileUpload from './pages/FileUpload';
 
 
 
@@ -22,7 +23,7 @@ function App() {
         <Route path="/" element={<MainPage />} /> 
         <Route path="/admin-login" element={<AdminLogin onLogin={() => setIsAuthenticated(true)}/>} />
         <Route Path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/admin-login" replace />}/>
-        
+
         <Route path="/pick-pack1" element={<PickAndPack1 />} />
         <Route path="/pick-pack2" element={<PickAndPack2 />} />
 
@@ -36,6 +37,7 @@ function App() {
 
         <Route path="/dashboard" element={<DashboardPage />} />
         
+         <Route path="/file-upload" element={<FileUpload />} />
        
         </Routes>
     </Router>
