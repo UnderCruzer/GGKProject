@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainPage from './pages/MainPage';
 import PickAndPack1 from './pages/PickAndPack1';
 import PickAndPack2 from './pages/PickAndPack2';
@@ -15,10 +15,14 @@ import AdminLogin from './pages/AdminLogin';
 
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   return (
     <Router>
         <Routes>
-        <Route path="/" element={<MainPage />} />
+        <Route path="/" element={<MainPage />} /> 
+        <Route path="/admin-login" element={<AdminLogin onLogin={() => setIsAuthenticated(true)}/>} />
+        <Route Path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/admin-login" replace />}/>
+        
         <Route path="/pick-pack1" element={<PickAndPack1 />} />
         <Route path="/pick-pack2" element={<PickAndPack2 />} />
 
@@ -32,7 +36,7 @@ function App() {
 
         <Route path="/dashboard" element={<DashboardPage />} />
         
-        <Route path="/admin-login" element={<AdminLogin />} />
+       
         </Routes>
     </Router>
   );

@@ -18,14 +18,28 @@
 .dashboard-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto;
+  line-height: 1.2;
   font-size: 14px;
   text-align: center;
 }
 
 .dashboard-table th,
 .dashboard-table td {
-  border: 1px solid #ccc
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: normal;
+  
 }
+
+/* 4. 필요하면 일부 컬럼 비율 고정 (예: 비행편명, 상태) */
+.dashboard-table th:nth-child(1),
+.dashboard-table td:nth-child(1) { width: 8%; }   /* ID 컬럼 */
+.dashboard-table th:nth-child(2),
+.dashboard-table td:nth-child(2) { width: 10%; }  /* 비행편명 */
+/* … 나머지는 auto */
 
 .cell-complete {
   background-color: #c8f7c5; /* 연한 초록 */
