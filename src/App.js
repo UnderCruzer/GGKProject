@@ -37,7 +37,7 @@ function App() {
 
         <Route path="/dashboard" element={<DashboardPage />} />
         
-         <Route path="/file-upload" element={<FileUpload />} />
+        <Route path="/file-upload" element={<FileUpload />} />
        
         </Routes>
     </Router>
