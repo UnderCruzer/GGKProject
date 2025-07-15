@@ -35,9 +35,19 @@
   font-weight: bold;
 }
 
+.login-button.active {
+  background: #007bff;    /* 진한 파랑 */
+  cursor: pointer;
+}
+
 .login-button:hover {
   background-color: #d0d0d0;
 }
+
+.login-button.active:hover {
+  background-color: #006ce0;
+}
+
 
 .join-link {
   text-align: right;
