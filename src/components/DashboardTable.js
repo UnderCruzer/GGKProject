@@ -5,25 +5,42 @@ const DashboardTable = ({ data }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  // 작업 키 정의
-  const completeKeys = ['bool_complete1', 'bool_complete2', 'bool_complete3', 'bool_complete4', 'bool_complete5', 'bool_complete6', 'bool_complete7', 'bool_complete8'];
-  // 전체 완료 상태 계산 
+
+  // ✅ 작업 키 정의
+  const completeKeys = [
+    'bool_complete1',
+    'bool_complete2',
+    'bool_complete3',
+    'bool_complete4',
+    'bool_complete5',
+    'bool_complete6',
+    'bool_complete7',
+    'bool_complete8'
+  ];
+
+  // ✅ 전체 완료 상태 계산 → "완료" / "미완료"
   const getOverrallStatus = (member) => {
-    return completeKeys.every(k => Number(member?.[k] ?? 0) === 1)
+    const allDone = completeKeys.every(k => Number(member?.[k] ?? 0) === 1);
+    return allDone ? '완료' : '미완료';
   };
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
-      key,direction: prev.key === key && prev.direction === 'asc' ? 'desc': 'asc',
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
   };
-  // 필터링 + 정렬 
+
+  // ✅ 필터링 + 정렬
   const filteredData = data
     .filter((item) => {
       const flightMatch = (item.flightNumber ?? "").toLowerCase().includes(searchTerm.toLowerCase());
-      const statusMatch = statusFilter === 'all'
-         || (statusFilter === '완료' && getOverrallStatus(item) === '완료') 
-         || (statusFilter === '미완료' && getOverrallStatus(item) === '미완료');
+      const status = getOverrallStatus(item); // ✅ item.tasks 제거
+      const statusMatch =
+        statusFilter === 'all' ||
+        (statusFilter === '완료' && status === '완료') ||
+        (statusFilter === '미완료' && status === '미완료');
+
       return flightMatch && statusMatch;
     })
     .sort((a, b) => {
@@ -33,12 +50,13 @@ const DashboardTable = ({ data }) => {
       return sortConfig.direction === 'asc'
         ? A.localeCompare(B)
         : B.localeCompare(A);
-    });    
+    });
 
   return (
     <div className="dashboard-container">
       <h2>상세 대시보드</h2>
 
+      {/* ✅ 검색 + 상태 필터 */}
       <div className="dashboard-controls">
         <input
           type="text"
@@ -53,63 +71,61 @@ const DashboardTable = ({ data }) => {
         </select>
       </div>
 
-    <div className="table-wrapper">
-      <table className="dashboard-table">
-        <thead>
-          <tr>
-           <th>ID</th>
+      {/* ✅ 테이블 */}
+      <div className="table-wrapper">
+        <table className="dashboard-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th onClick={() => handleSort('flightNumber')}>비행편명</th>
+              <th onClick={() => handleSort('destination')}>목적지</th>
+              <th onClick={() => handleSort('acversion')}>기종</th>
 
-           <th onClick={() => handleSort('flight')}>비행편명</th>
-           <th onClick={() => handleSort('destination')}>목적지</th>
-           <th onClick={() => handleSort('aircraft')}>기종</th>
+              {completeKeys.map((key) => (
+                <th key={key}>{key.toUpperCase()}</th>
+              ))}
 
-           {completeKeys.map((key) => (<th key = {key}>{key.toUpperCase()}</th>))}
-        
-           <th>완료 여부</th>
-           <th onClick={() => handleSort('delayMinutes')}>지연시간</th>
-           <th>출발일</th>
-           <th>작업시작</th>
-           <th>작업종료</th>
-           <th>완료일</th>
-           <th>완료시간</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData.map((item, idx) => {
-            const overallStatus = getOverrallStatus(item.tasks);
-            const statusClass = overallStatus === '완료' 
-            ? 'cell-complete' 
-            : 'cell-incomplete';
+              <th>완료 여부</th>
+              <th>출발일</th>
+              <th>출발시간</th>
+              <th>업로드일</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.map((item, idx) => {
+              const overallStatus = getOverrallStatus(item); // ✅ 수정
+              const statusClass =
+                overallStatus === '완료' ? 'cell-complete' : 'cell-incomplete';
 
-            let delayClass = '';
-            const delay = item.delayMinutes ?? 0;
-            if (delay === 0) delayClass = 'delay-none';
-            else if (delay <= 15) delayClass = 'delay-low';
-            else if (delay <= 30) delayClass = 'delay-medium';
-            else delayClass = 'delay-high';
-
-            return (
-              <tr key={idx}>
-                  <td data-label="ID">{idx + 1}</td>
-                  <td data-label="비행편명">{item.flight}</td>
+              return (
+                <tr key={idx}>
+                  <td data-label="ID">{item.id}</td>
+                  <td data-label="비행편명">{item.flightNumber}</td>
                   <td data-label="목적지">{item.destination}</td>
-                  <td data-label="기종">{item.aircraft}</td>
+                  <td data-label="기종">{item.acversion}</td>
+
+                  {/* ✅ bool_complete1~8 값 표시 */}
                   {completeKeys.map((key) => (
-                  <td data-label={key.toUpperCase()} key={key}>{item.tasks?.[key] ?? 0}</td> ))}
-                  <td data-label="완료 여부" className={statusClass}>{overallStatus}</td>
-                  <td data-label="지연시간" className={delayClass}>{delay}분</td>
-                  <td data-label="출발일">{item.departureDate}</td>
-                  <td data-label="작업시간">{item.startTime}</td>
-                  <td data-label="작업종료">{item.endTime}</td>
-                  <td data-label="완료일">{item.completeDate}</td>
-                  <td data-label="완료시간">{item.completeTime}</td>
+                    <td data-label={key.toUpperCase()} key={key}>
+                      {item?.[key] ?? 0}
+                    </td>
+                  ))}
+
+                  {/* ✅ 완료/미완료 표시 */}
+                  <td data-label="완료 여부" className={statusClass}>
+                    {overallStatus}
+                  </td>
+
+                  <td data-label="출발일">{item.departuredate}</td>
+                  <td data-label="출발시간">{item.departuretime}</td>
+                  <td data-label="업로드일">{item.uploadDate}</td>
                 </tr>
-            );
-          })}
-        </tbody>
-      </table>  
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
   );
 };
 
