@@ -4,6 +4,7 @@ import './AdminLogin.css';
 
 const AdminLogin = ({ onLogin }) => {
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -11,12 +12,30 @@ const AdminLogin = ({ onLogin }) => {
   const searchParams = new URLSearchParams(location.search);
   const redirectPath = searchParams.get('redirect') || '/dashboard';
 
-  const handleLogin = () => {
-    if (password === '1234') {
-      if (onLogin) onLogin(); // 인증 상태 업데이트
-      navigate(redirectPath, { replace: true }); // 로그인 후 원래 가려던 페이지로 이동
-    } else {
-      alert('비밀번호가 틀렸습니다');
+   const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:8080/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password })
+      });
+
+      const isSuccess = await response.json();
+
+      if (isSuccess) {
+        if (onLogin) onLogin();
+        navigate(redirectPath, { replace: true });
+      } else {
+        alert('비밀번호가 틀렸습니다');
+      }
+    } catch (error) {
+      alert('서버 연결 실패 또는 오류 발생');
+      console.error('로그인 오류:', error); // 콤마로 구분
+    } finally {
+      setLoading(false); // L 소문자
     }
   };
 
@@ -31,8 +50,9 @@ const AdminLogin = ({ onLogin }) => {
             className="login-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
           />
-          <button className="login-button" onClick={handleLogin}>Log in</button>
+          <button className="login-button" onClick={handleLogin} disabled={loading}>Log in</button>
         </div>
       </div>
     </div>
