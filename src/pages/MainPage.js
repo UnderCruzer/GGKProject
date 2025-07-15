@@ -35,7 +35,7 @@ const MainPage = () => {
         <div className="admin-buttons-container">
           <button className="admin-button" onClick={() => navigate('/admin-login')}>대시보드 게시판형</button>
           <button className="admin-button" onClick={() => navigate('/admin-login')}>대시보드 UI형</button>
-          <button className="admin-button" onClick={() => navigate('/admin-login')}>CSV Upload</button>
+          <button className="admin-button" onClick={() => navigate('/file-upload')}>CSV Upload</button>
         </div>
       </div>
     </div>

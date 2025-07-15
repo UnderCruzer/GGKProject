@@ -21,8 +21,9 @@ function App() {
     <Router>
         <Routes>
         <Route path="/" element={<MainPage />} /> 
-        <Route path="/admin-login" element={<AdminLogin onLogin={() => setIsAuthenticated(true)}/>} />
+        <Route path="/admin-login" element={<AdminLogin onLogin={() => setIsAuthenticated(true)} />} />
         <Route Path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/admin-login" replace />}/>
+      
 
         <Route path="/pick-pack1" element={<PickAndPack1 />} />
         <Route path="/pick-pack2" element={<PickAndPack2 />} />

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 import './AdminLogin.css';
 
-const AdminLogin = ({ onLogin }) => {
+const AdminLogin = ({ onLogin, redirectTo = "/dashboard" }) => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate() ;
 
   const handleLogin = () => {
     if (password === '1234') {
       onLogin();
-      navigate('/Dashboard');
+      navigate(redirectTo);
     } else {
     alert('비밀번호가 틀렸습니다');
     }
