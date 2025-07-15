@@ -74,5 +74,5 @@
   height: auto;
   display: flex;
   flex-direction: column;
-  gap: 30px; /* Pie와 Bar 사이 간격 */
+  gap: 30px;
 }
