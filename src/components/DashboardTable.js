@@ -20,7 +20,7 @@ const DashboardTable = ({ data }) => {
   // 필터링 + 정렬 
   const filteredData = data
     .filter((item) => {
-      const flightMatch = item.flight.toLowerCase().includes(searchTerm.toLowerCase());
+      const flightMatch = (item.flightNumber ?? "").toLowerCase().includes(searchTerm.toLowerCase());
       const statusMatch = statusFilter === 'all'
          || (statusFilter === '완료' && getOverrallStatus(item) === '완료') 
          || (statusFilter === '미완료' && getOverrallStatus(item) === '미완료');
