@@ -46,7 +46,7 @@ function FileUpload() {
     setSelectedFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
   };
 
-  const handleSubmit = (event) => {
+ /* const handleSubmit = (event) => {
     event.preventDefault();
     if (selectedFiles.length === 0) {
       alert("업로드할 파일을 먼저 선택해 주세요.");
@@ -56,14 +56,30 @@ function FileUpload() {
     const formData = new FormData();
     selectedFiles.forEach(file => {
       formData.append('files', file);
+    });  
+  };*/
+
+  const handleUpload = async () => {
+  try {
+    const formData = new FormData();
+    selectedFiles.forEach(file => formData.append("file", file)); // 파일 추가
+
+    const response = await fetch("http://211.42.159.18:8080/api/csv/upload", {
+      method: "POST",
+      body: formData,
     });
 
-    // TODO: 실제 서버 업로드 로직 추가
-    // fetch("/api/upload", { method: "POST", body: formData })
+    if (response.ok) {
+      setSuccessMessage("업로드 성공 ✅");
+    } else {
+      setSuccessMessage("업로드 실패 ❌");
+    }
+  } catch (error) {
+    console.error("업로드 중 오류 발생:", error);
+    setSuccessMessage("서버 오류 ❌");
+  }
+};
 
-    // ✅ 성공했다고 가정하고 메시지 표시
-    setSuccessMessage("✅ 파일이 성공적으로 업로드되었습니다!");
-  };
 
   return (
     <div className="upload-container">
@@ -110,7 +126,7 @@ function FileUpload() {
         </div>
       )}
 
-      <button type="button" className="submit-btn" onClick={handleSubmit}>
+      <button type="button" className="submit-btn" onClick={handleUpload}>
         Submit
       </button>
 
