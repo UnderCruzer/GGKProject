@@ -6,14 +6,10 @@ const DashboardTable = ({ data }) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   // 작업 키 정의
-  const taskKeys = ['mnp1', 'mnp2', 'mnp3', 'mnp4', 'pnp1', 'pnp2', 'wnp1', 'wnp2'];
+  const completeKeys = ['bool_complete1', 'bool_complete2', 'bool_complete3', 'bool_complete4', 'bool_complete5', 'bool_complete6', 'bool_complete7', 'bool_complete8'];
   // 전체 완료 상태 계산 
-  const getOverrallStatus = (tasks) => {
-    for (const k of taskKeys) {
-      if (tasks[k] === 'N') 
-        return '미완료';
-    }
-    return '완료';
+  const getOverrallStatus = (member) => {
+    return completeKeys.every(k => member[k] === 1) ? '완료' : '미완료';
   };
 
   const handleSort = (key) => {
@@ -25,10 +21,9 @@ const DashboardTable = ({ data }) => {
   const filteredData = data
     .filter((item) => {
       const flightMatch = item.flight.toLowerCase().includes(searchTerm.toLowerCase());
-      const overall = getOverrallStatus(item.tasks);
       const statusMatch = statusFilter === 'all'
-         || (statusFilter === '완료' && overall === '완료') 
-         || (statusFilter === '미완료' && overall === '미완료');
+         || (statusFilter === '완료' && getOverrallStatus(item) === '완료') 
+         || (statusFilter === '미완료' && getOverrallStatus(item) === '미완료');
       return flightMatch && statusMatch;
     })
     .sort((a, b) => {
@@ -69,7 +64,7 @@ const DashboardTable = ({ data }) => {
            <th onClick={() => handleSort('destination')}>목적지</th>
            <th onClick={() => handleSort('aircraft')}>기종</th>
 
-           {taskKeys.map((key) => (<th key = {key}>{key.toUpperCase()}</th>))}
+           {completeKeys.map((key) => (<th key = {key}>{key.toUpperCase()}</th>))}
         
            <th>완료 여부</th>
            <th onClick={() => handleSort('delayMinutes')}>지연시간</th>

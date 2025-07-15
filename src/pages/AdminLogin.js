@@ -33,9 +33,9 @@ const AdminLogin = ({ onLogin }) => {
       }
     } catch (error) {
       alert('서버 연결 실패 또는 오류 발생');
-      console.error('로그인 오류:', error); // 콤마로 구분
+      console.error('로그인 오류:', error); 
     } finally {
-      setLoading(false); // L 소문자
+      setLoading(false); 
     }
   };
 

@@ -34,24 +34,26 @@ const DashboardPage = () => {
     };
 
   
-  // tasks 키 순서: mnp1~4, pnp1~2, wnp1~2
-    const tasks = {
-      mnp1: findStatus(makeAndPack1Data),
-      mnp2: findStatus(makeAndPack2Data),
-      mnp3: findStatus(makeAndPack3Data),
-      mnp4: findStatus(makeAndPack4Data),
-      pnp1: findStatus(pickAndPack1Data),
-      pnp2: findStatus(pickAndPack2Data),
-      wnp1: findStatus(washAndPack1Data),
-      wnp2: findStatus(washAndPack2Data),
-    };
-
-  // 기본 정보는 첫 번째 발견된 레코드에서 가져오기
     const sample =
       makeAndPack1Data.find((i) => i.flight === flight) ||
       pickAndPack1Data.find((i) => i.flight === flight) ||
       washAndPack1Data.find((i) => i.flight === flight) ||
-      {};
+      {}; 
+
+      // tasks 키 순서: mnp1~4, pnp1~2, wnp1~2
+    const tasks = {
+      bool_complete1 : findStatus(makeAndPack1Data) === 'Y' ? 1 : 0,
+      bool_complete2 : findStatus(makeAndPack2Data) === 'Y' ? 1 : 0,
+      bool_complete3 : findStatus(makeAndPack3Data) === 'Y' ? 1 : 0,
+      bool_complete4 : findStatus(makeAndPack4Data) === 'Y' ? 1 : 0,
+      bool_complete5 : findStatus(pickAndPack1Data) === 'Y' ? 1 : 0,
+      bool_complete6 : findStatus(pickAndPack2Data) === 'Y' ? 1 : 0,
+      bool_complete7 : findStatus(washAndPack1Data) === 'Y' ? 1 : 0,
+      bool_complete8 : findStatus(washAndPack2Data) === 'Y' ? 1 : 0,
+    }; 
+      
+    // 기본 정보는 첫 번째 발견된 레코드에서 가져오기
+   
    
      return {
       id: idx + 1,
