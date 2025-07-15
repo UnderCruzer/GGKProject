@@ -58,6 +58,7 @@ const DashboardTable = ({ data }) => {
         <thead>
           <tr>
            <th>ID</th>
+
            <th onClick={() => handleSort('flight')}>비행편명</th>
            <th onClick={() => handleSort('destination')}>목적지</th>
            <th onClick={() => handleSort('aircraft')}>기종</th>
@@ -93,9 +94,8 @@ const DashboardTable = ({ data }) => {
                   <td data-label="비행편명">{item.flight}</td>
                   <td data-label="목적지">{item.destination}</td>
                   <td data-label="기종">{item.aircraft}</td>
-                  {taskKeys.map((key) => (
-                    <td data-label={key.toUpperCase()} key={key}>{item.tasks?.[key] ?? 'Y'}</td>
-                  ))}
+                  {completeKeys.map((key) => (
+                  <td data-label={key.toUpperCase()} key={key}>{item.tasks?.[key] ?? 0}</td> ))}
                   <td data-label="완료 여부" className={statusClass}>{overallStatus}</td>
                   <td data-label="지연시간" className={delayClass}>{delay}분</td>
                   <td data-label="출발일">{item.departureDate}</td>
