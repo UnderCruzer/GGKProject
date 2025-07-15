@@ -63,7 +63,6 @@ function FileUpload() {
 
     // ✅ 성공했다고 가정하고 메시지 표시
     setSuccessMessage("✅ 파일이 성공적으로 업로드되었습니다!");
-    setSelectedFiles([]); // 업로드 후 파일 목록 초기화
   };
 
   return (
