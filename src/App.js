@@ -12,6 +12,8 @@ import MakeAndPack4 from './pages/MakeAndPack4';
 import DashboardPage from './pages/DashboardPage';
 import AdminLogin from './pages/AdminLogin';
 import FileUpload from './pages/FileUpload';
+import DashboardUI from './pages/DashboardUI';
+
 
 
 
@@ -21,10 +23,7 @@ function App() {
     <Router>
         <Routes>
         <Route path="/" element={<MainPage />} /> 
-        <Route path="/admin-login" element={<AdminLogin onLogin={() => setIsAuthenticated(true)} />} />
-        <Route Path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/admin-login" replace />}/>
-      
-
+       
         <Route path="/pick-pack1" element={<PickAndPack1 />} />
         <Route path="/pick-pack2" element={<PickAndPack2 />} />
 
@@ -36,10 +35,15 @@ function App() {
         <Route path="/make-pack3" element={<MakeAndPack3 />} />
         <Route path="/make-pack4" element={<MakeAndPack4 />} />
 
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/admin-login" element={<AdminLogin onLogin={() => setIsAuthenticated(true)}/>} />
+          
+        <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/admin-login" replace />}/>
+
+        <Route path="/dashboardUI" element={isAuthenticated ? <DashboardUI /> : <Navigate to="/admin-login" replace />} />
+
+        <Route path="/file-upload" element={isAuthenticated ? <FileUpload /> : <Navigate to="/admin-login" replace />} />
+      
         
-        <Route path="/file-upload" element={<FileUpload />} />
-       
         </Routes>
     </Router>
   );

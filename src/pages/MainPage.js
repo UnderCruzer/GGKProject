@@ -5,6 +5,11 @@ import './MainPage.css';
 const MainPage = () => {
   const navigate = useNavigate();
 
+  // 로그인 페이지로 이동하면서 redirect 파라미터 추가
+  const goToLoginWithRedirect = (redirectPath) => {
+    navigate(`/admin-login?redirect=${redirectPath}`);
+  };
+
   return (
     <div className="landing-container">
       <h1 className="main-title">GGK Checklist 메인 페이지</h1>
@@ -33,9 +38,11 @@ const MainPage = () => {
       <div className="admin-section">
         <h2>관리자 화면</h2>
         <div className="admin-buttons-container">
-          <button className="admin-button" onClick={() => navigate('/admin-login')}>대시보드 게시판형</button>
-          <button className="admin-button" onClick={() => navigate('/admin-login')}>대시보드 UI형</button>
-          <button className="admin-button" onClick={() => navigate('/file-upload')}>CSV Upload</button>
+          <button className="admin-button" onClick={() => goToLoginWithRedirect('/dashboard')}>대시보드 게시판형</button>
+
+          <button className="admin-button" onClick={() => goToLoginWithRedirect('/dashboardUI')}>대시보드 UI형</button>
+          
+          <button className="admin-button" onClick={() => goToLoginWithRedirect('/file-upload')}>CSV Upload</button>
         </div>
       </div>
     </div>

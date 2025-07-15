@@ -7,6 +7,8 @@ function FileUpload() {
   // 드래그 앤 드랍 시 UI 변경용 (boolean)
   const [isDragOver, setIsDragOver] = useState(false);
   // 숨긴 <input type="file">에 접근하기 위한 참조
+   const [successMessage, setSuccessMessage] = useState("");
+  // 성공 메시지 상태 추가
   const fileInputRef = useRef(null);
 
   // 파일 누적 및 중복 방지
@@ -68,6 +70,10 @@ function FileUpload() {
     });
     
     // 실제 서버 전송 로직...
+ // fetch("/api/upload", { method: "POST", body: formData })
+    // ✅ 성공했다고 가정하고 메시지 표시
+    setSuccessMessage("✅ 파일이 성공적으로 업로드되었습니다!");
+    setSelectedFiles([]); // 업로드 후 파일 목록 초기화
   };
 
   return (
@@ -118,6 +124,13 @@ function FileUpload() {
       <button type="button" className="submit-btn" onClick={handleSubmit}>
         Submit
       </button>
+      
+      {/* ✅ 업로드 성공 메시지 표시 */}
+      {successMessage && (
+        <div style={{ marginTop: "20px", color: "green", fontWeight: "bold" }}>
+          {successMessage}
+        </div>
+      )}
     </div>
   );
 }
