@@ -9,7 +9,7 @@ const DashboardTable = ({ data }) => {
   const completeKeys = ['bool_complete1', 'bool_complete2', 'bool_complete3', 'bool_complete4', 'bool_complete5', 'bool_complete6', 'bool_complete7', 'bool_complete8'];
   // 전체 완료 상태 계산 
   const getOverrallStatus = (member) => {
-    return completeKeys.every(k => member[k] === 1) ? '완료' : '미완료';
+    return completeKeys.every(k => Number(member?.[k] ?? 0) === 1)
   };
 
   const handleSort = (key) => {
