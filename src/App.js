@@ -16,14 +16,13 @@ import DashboardUI from './pages/DashboardUI';
 
 
 
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   return (
     <Router>
         <Routes>
         <Route path="/" element={<MainPage />} /> 
-       
+
         <Route path="/pick-pack1" element={<PickAndPack1 />} />
         <Route path="/pick-pack2" element={<PickAndPack2 />} />
 
@@ -37,13 +36,15 @@ function App() {
 
         <Route path="/admin-login" element={<AdminLogin onLogin={() => setIsAuthenticated(true)}/>} />
           
-        <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/admin-login" replace />}/>
+        {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
+        <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/admin-login" replace />}/>`
 
-        <Route path="/dashboardUI" element={isAuthenticated ? <DashboardUI /> : <Navigate to="/admin-login" replace />} />
+        {/* <Route path="/dashboardUI" element={<DashboardUI />} /> */}
+        <Route path="/dashboardUI" element={isAuthenticated ? <DashboardUI /> : <Navigate to="/admin-login" replace />}/>
 
-        <Route path="/file-upload" element={isAuthenticated ? <FileUpload /> : <Navigate to="/admin-login" replace />} />
-      
-        
+        {/* <Route path="/file-upload" element={<FileUpload />} /> */}
+        <Route path="/file-upload" element={isAuthenticated ? <FileUpload /> : <Navigate to="/admin-login" replace />}/>
+       
         </Routes>
     </Router>
   );
