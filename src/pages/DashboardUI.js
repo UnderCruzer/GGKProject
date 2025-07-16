@@ -14,18 +14,13 @@ import {
 
 const COLORS = ["#4caf50", "#f44336"];
 
-// ✅ 완료/미완료 카운트 함수
-const countStatus = (arr) => {
-  const completeKeys = [
-    'bool_complete1','bool_complete2','bool_complete3','bool_complete4',
-    'bool_complete5','bool_complete6','bool_complete7','bool_complete8'
-  ];
-
+// ✅ 부서별 완료 판정 함수
+const countStatus = (arr, keys) => {
   let completed = 0;
   let notCompleted = 0;
 
   arr.forEach(item => {
-    const allDone = completeKeys.every(k => Number(item?.[k] ?? 0) === 1);
+    const allDone = keys.every(k => Number(item?.[k] ?? 0) === 1);
     if (allDone) completed++;
     else notCompleted++;
   });
@@ -174,15 +169,21 @@ function DashboardUI() {
     fetchDashboardData();
   }, []);
 
-  // ✅ 부서별 데이터 필터 (formNumber / department에 맞게 조정)
-  const makeDept = data.filter(item => item.formNumber === 1); // Make&Pack
-  const pickDept = data.filter(item => item.formNumber === 2); // Pick&Pack
-  const washDept = data.filter(item => item.formNumber === 3); // Wash&Pack
+  // ✅ 부서별 완료/미완료 카운트
+  const makeCount = useMemo(
+    () => countStatus(data, ['bool_complete1', 'bool_complete2', 'bool_complete3', 'bool_complete4']),
+    [data]
+  );
 
-  // ✅ 완료/미완료 카운트 (loading 여부 상관없이 Hook 최상단)
-  const makeCount = useMemo(() => countStatus(makeDept), [makeDept]);
-  const pickCount = useMemo(() => countStatus(pickDept), [pickDept]);
-  const washCount = useMemo(() => countStatus(washDept), [washDept]);
+  const pickCount = useMemo(
+    () => countStatus(data, ['bool_complete5', 'bool_complete6']),
+    [data]
+  );
+
+  const washCount = useMemo(
+    () => countStatus(data, ['bool_complete7', 'bool_complete8']),
+    [data]
+  );
 
   // ✅ PieChart 데이터
   const makePie = [
