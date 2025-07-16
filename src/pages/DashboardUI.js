@@ -14,18 +14,18 @@ import {
 
 const COLORS = ["#4caf50", "#f44336"];
 
-// ✅ 부서별 완료 판정 함수
-const countStatus = (arr, keys) => {
-  let completed = 0;
-  let notCompleted = 0;
+// ✅ 부서별 완료 스텝 카운트 함수
+const countStepStatus = (arr, keys) => {
+  let totalSteps = arr.length * keys.length;      // 전체 스텝 수
+  let completedSteps = 0;                         // 완료된 스텝 수
 
   arr.forEach(item => {
-    const allDone = keys.every(k => Number(item?.[k] ?? 0) === 1);
-    if (allDone) completed++;
-    else notCompleted++;
+    keys.forEach(k => {
+      if (Number(item?.[k] ?? 0) === 1) completedSteps++;
+    });
   });
 
-  return { completed, notCompleted };
+  return { completedSteps, totalSteps };
 };
 
 // ✅ PieChart 안전 렌더링
@@ -169,48 +169,61 @@ function DashboardUI() {
     fetchDashboardData();
   }, []);
 
-  // ✅ 부서별 완료/미완료 카운트
-  const makeCount = useMemo(
-    () => countStatus(data, ['bool_complete1', 'bool_complete2', 'bool_complete3', 'bool_complete4']),
+  // ✅ 부서별 완료 스텝 카운트
+  const makeStep = useMemo(
+    () => countStepStatus(data, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4']),
     [data]
   );
 
-  const pickCount = useMemo(
-    () => countStatus(data, ['bool_complete5', 'bool_complete6']),
+  const pickStep = useMemo(
+    () => countStepStatus(data, ['bool_complete5','bool_complete6']),
     [data]
   );
 
-  const washCount = useMemo(
-    () => countStatus(data, ['bool_complete7', 'bool_complete8']),
+  const washStep = useMemo(
+    () => countStepStatus(data, ['bool_complete7','bool_complete8']),
     [data]
   );
 
-  // ✅ PieChart 데이터
+  // ✅ PieChart 데이터 (완료 스텝 vs 미완료 스텝)
   const makePie = [
-    { name: "완료", value: makeCount.completed },
-    { name: "미완료", value: makeCount.notCompleted }
+    { name: "완료", value: makeStep.completedSteps },
+    { name: "미완료", value: makeStep.totalSteps - makeStep.completedSteps }
   ];
   const pickPie = [
-    { name: "완료", value: pickCount.completed },
-    { name: "미완료", value: pickCount.notCompleted }
+    { name: "완료", value: pickStep.completedSteps },
+    { name: "미완료", value: pickStep.totalSteps - pickStep.completedSteps }
   ];
   const washPie = [
-    { name: "완료", value: washCount.completed },
-    { name: "미완료", value: washCount.notCompleted }
+    { name: "완료", value: washStep.completedSteps },
+    { name: "미완료", value: washStep.totalSteps - washStep.completedSteps }
   ];
 
   // ✅ BarChart 데이터
-  const makeBar = [{ name: "Make&Pack", 완료: makeCount.completed, 미완료: makeCount.notCompleted }];
-  const pickBar = [{ name: "Pick&Pack", 완료: pickCount.completed, 미완료: pickCount.notCompleted }];
-  const washBar = [{ name: "Wash&Pack", 완료: washCount.completed, 미완료: washCount.notCompleted }];
+  const makeBar = [{
+    name: "Make&Pack",
+    완료: makeStep.completedSteps,
+    미완료: makeStep.totalSteps - makeStep.completedSteps
+  }];
+  const pickBar = [{
+    name: "Pick&Pack",
+    완료: pickStep.completedSteps,
+    미완료: pickStep.totalSteps - pickStep.completedSteps
+  }];
+  const washBar = [{
+    name: "Wash&Pack",
+    완료: washStep.completedSteps,
+    미완료: washStep.totalSteps - washStep.completedSteps
+  }];
 
   if (loading) return <div>데이터 불러오는 중...</div>;
 
   return (
     <div className="dashboard-ui-container">
-      <h1>✅ 부서별 완료 현황 (DB 실시간)</h1>
+      <h1>✅ 부서별 진행 스텝 현황 (DB 실시간)</h1>
 
       <div className="department-container">
+        {/* ✅ Make&Pack */}
         <div className="department-card">
           <h2>Make & Pack</h2>
           <div className="chart-wrap">
@@ -219,6 +232,7 @@ function DashboardUI() {
           </div>
         </div>
 
+        {/* ✅ Pick&Pack */}
         <div className="department-card">
           <h2>Pick & Pack</h2>
           <div className="chart-wrap">
@@ -227,6 +241,7 @@ function DashboardUI() {
           </div>
         </div>
 
+        {/* ✅ Wash&Pack */}
         <div className="department-card">
           <h2>Wash & Pack</h2>
           <div className="chart-wrap">
