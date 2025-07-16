@@ -14,10 +14,10 @@ import {
 
 const COLORS = ["#4caf50", "#f44336"];
 
-// ✅ 부서별 완료 스텝 카운트 함수
+// ✅ 완료 스텝 카운트 함수
 const countStepStatus = (arr, keys) => {
-  let totalSteps = arr.length * keys.length;      // 전체 스텝 수
-  let completedSteps = 0;                         // 완료된 스텝 수
+  let totalSteps = arr.length * keys.length;
+  let completedSteps = 0;
 
   arr.forEach(item => {
     keys.forEach(k => {
@@ -174,18 +174,25 @@ function DashboardUI() {
     () => countStepStatus(data, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4']),
     [data]
   );
-
   const pickStep = useMemo(
     () => countStepStatus(data, ['bool_complete5','bool_complete6']),
     [data]
   );
-
   const washStep = useMemo(
     () => countStepStatus(data, ['bool_complete7','bool_complete8']),
     [data]
   );
 
-  // ✅ PieChart 데이터 (완료 스텝 vs 미완료 스텝)
+  // ✅ 전체 진행률 스텝 카운트
+  const totalStep = useMemo(
+    () => countStepStatus(data, [
+      'bool_complete1','bool_complete2','bool_complete3','bool_complete4',
+      'bool_complete5','bool_complete6','bool_complete7','bool_complete8'
+    ]),
+    [data]
+  );
+
+  // ✅ PieChart 데이터
   const makePie = [
     { name: "완료", value: makeStep.completedSteps },
     { name: "미완료", value: makeStep.totalSteps - makeStep.completedSteps }
@@ -197,6 +204,10 @@ function DashboardUI() {
   const washPie = [
     { name: "완료", value: washStep.completedSteps },
     { name: "미완료", value: washStep.totalSteps - washStep.completedSteps }
+  ];
+  const totalPie = [
+    { name: "완료", value: totalStep.completedSteps },
+    { name: "미완료", value: totalStep.totalSteps - totalStep.completedSteps }
   ];
 
   // ✅ BarChart 데이터
@@ -215,14 +226,28 @@ function DashboardUI() {
     완료: washStep.completedSteps,
     미완료: washStep.totalSteps - washStep.completedSteps
   }];
+  const totalBar = [{
+    name: "전체",
+    완료: totalStep.completedSteps,
+    미완료: totalStep.totalSteps - totalStep.completedSteps
+  }];
 
   if (loading) return <div>데이터 불러오는 중...</div>;
 
   return (
     <div className="dashboard-ui-container">
-      <h1>✅ 부서별 진행 스텝 현황 (DB 실시간)</h1>
+      <h1>✅ 부서별 + 전체 진행 스텝 현황 (DB 실시간)</h1>
 
       <div className="department-container">
+        {/* ✅ 전체 진행률 */}
+        <div className="department-card">
+          <h2>전체 진행률</h2>
+          <div className="chart-wrap">
+            {renderPie(totalPie)}
+            {renderBar(totalBar)}
+          </div>
+        </div>
+
         {/* ✅ Make&Pack */}
         <div className="department-card">
           <h2>Make & Pack</h2>
