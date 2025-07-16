@@ -29,6 +29,7 @@ const mapToFlightTableData = (item) => {
   const baseDate = new Date(item.departuredate ?? "1970-01-01");
   const arrivalTime = item.arrivaltime ?? null;
 
+  // ✅ 작업 시작/종료 계산
   const startTimeObj = calcTime(baseDate, arrivalTime, -8);
   const startTime = formatTime(startTimeObj);
 
@@ -39,17 +40,24 @@ const mapToFlightTableData = (item) => {
     endTime = formatTime(endTimeObj);
   }
 
+  // ✅ 완료 여부 (1~4 중 하나라도 1이면 완료)
+  const isCompleted =
+    Number(item.bool_complete1) === 1 ||
+    Number(item.bool_complete2) === 1 ||
+    Number(item.bool_complete3) === 1 ||
+    Number(item.bool_complete4) === 1;
+
   return {
     id: item.id ?? "-",
-    flight: item.flightNumber ?? "-",        // 편명
-    destination: item.destination ?? "-",    // 목적지
-    aircraft: item.acversion ?? "-",         // 기종
-    departureDate: item.departuredate ?? "-",// 출발날짜
-    departureTime: arrivalTime ?? "-",       // 출발시간
-    startTime: startTime,                    // 출발 -8시간
-    prepDays: -1,                            // 준비시간 고정
-    endTime: endTime,                        // 작업시작 +2시간
-    completed: "N",                          // 아직 완료 상태는 DB bool 기반 X
+    flight: item.flightNumber ?? "-",         // 편명
+    destination: item.destination ?? "-",     // 목적지
+    aircraft: item.acversion ?? "-",          // 기종
+    departureDate: item.departuredate ?? "-", // 출발날짜
+    departureTime: arrivalTime ?? "-",        // 출발시간
+    startTime: startTime,                     // 출발 -8시간
+    prepDays: -1,                             // 준비시간 고정
+    endTime: endTime,                         // 작업시작 +2시간
+    completed: isCompleted ? "Y" : "N",       // ✅ 하나라도 1이면 Y
     note: "",
     completeDate: "",
     completeTime: ""
