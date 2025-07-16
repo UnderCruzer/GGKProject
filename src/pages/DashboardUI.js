@@ -16,18 +16,20 @@ const COLORS = ["#4caf50", "#f44336"];
 
 // ✅ 완료/미완료 카운트 함수
 const countStatus = (arr) => {
+  const completeKeys = [
+    'bool_complete1','bool_complete2','bool_complete3','bool_complete4',
+    'bool_complete5','bool_complete6','bool_complete7','bool_complete8'
+  ];
+
   let completed = 0;
   let notCompleted = 0;
+
   arr.forEach(item => {
-    // DB 데이터에서 completed 여부 판단 → bool_complete1~8 모두 1이면 완료
-    const completeKeys = [
-      'bool_complete1','bool_complete2','bool_complete3','bool_complete4',
-      'bool_complete5','bool_complete6','bool_complete7','bool_complete8'
-    ];
     const allDone = completeKeys.every(k => Number(item?.[k] ?? 0) === 1);
     if (allDone) completed++;
     else notCompleted++;
   });
+
   return { completed, notCompleted };
 };
 
@@ -151,6 +153,7 @@ const renderBar = (data) => {
     </div>
   );
 };
+
 function DashboardUI() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -171,12 +174,12 @@ function DashboardUI() {
     fetchDashboardData();
   }, []);
 
-  // ✅ 부서별 데이터 분류 (백엔드 응답에 department 필드가 있다고 가정)
-  const makeDept = data.filter(item => item.department === "Make&Pack");
-  const pickDept = data.filter(item => item.department === "Pick&Pack");
-  const washDept = data.filter(item => item.department === "Wash&Pack");
+  // ✅ 부서별 데이터 필터 (formNumber / department에 맞게 조정)
+  const makeDept = data.filter(item => item.formNumber === 1); // Make&Pack
+  const pickDept = data.filter(item => item.formNumber === 2); // Pick&Pack
+  const washDept = data.filter(item => item.formNumber === 3); // Wash&Pack
 
-  // ✅ 부서별 완료/미완료 카운트 (loading 여부 상관없이 항상 Hook 호출)
+  // ✅ 완료/미완료 카운트 (loading 여부 상관없이 Hook 최상단)
   const makeCount = useMemo(() => countStatus(makeDept), [makeDept]);
   const pickCount = useMemo(() => countStatus(pickDept), [pickDept]);
   const washCount = useMemo(() => countStatus(washDept), [washDept]);
@@ -200,7 +203,6 @@ function DashboardUI() {
   const pickBar = [{ name: "Pick&Pack", 완료: pickCount.completed, 미완료: pickCount.notCompleted }];
   const washBar = [{ name: "Wash&Pack", 완료: washCount.completed, 미완료: washCount.notCompleted }];
 
-  // ✅ 여기서 이제 로딩 표시
   if (loading) return <div>데이터 불러오는 중...</div>;
 
   return (
@@ -235,4 +237,5 @@ function DashboardUI() {
     </div>
   );
 }
+
 export default DashboardUI;
