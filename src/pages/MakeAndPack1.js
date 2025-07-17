@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import FlightTable from "../components/FlightTable";
 import { useMembers } from "../context/MembersContext";
 
@@ -29,17 +29,6 @@ const formatTime = (dateObj) => {
 
 const MakeAndPack1 = () => {
   const { members, setMembers, loading } = useMembers();
-  // ⭐️ [수정] 컴포넌트 마운트 상태를 추적하기 위한 ref 추가
-  const isMounted = useRef(true);
-
-  // ⭐️ [수정] 컴포넌트가 언마운트될 때 isMounted ref를 false로 설정
-  useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
 
   // ✅ 백엔드 데이터 → 화면 표시용 데이터 변환
   const mapToFlightTableData = (item) => {
@@ -106,12 +95,6 @@ const MakeAndPack1 = () => {
         }
       );
 
-      // ⭐️ [수정] API 호출 후 컴포넌트가 언마운트되었다면 상태 업데이트를 중단
-      if (!isMounted.current) {
-        console.log("🔄 Component unmounted after fetch. State update was cancelled.");
-        return;
-      }
-
       if (!res.ok) {
         const errorText = await res.text();
         console.error("❌ API 응답 오류:", errorText);
@@ -125,6 +108,7 @@ const MakeAndPack1 = () => {
         return;
       }
 
+      // ⭐️ [수정] 상태를 즉시 업데이트하도록 수정
       setMembers((prev) => {
         if (!Array.isArray(prev)) {
           console.error("❌ prev가 배열이 아님:", prev);
