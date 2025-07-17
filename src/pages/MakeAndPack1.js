@@ -36,8 +36,6 @@ const MakeAndPack1 = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             value: newValue,
-            completeDate,
-            completeTime
           }),
         }
       );
