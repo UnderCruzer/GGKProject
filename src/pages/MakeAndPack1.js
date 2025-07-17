@@ -5,48 +5,70 @@ import { useMembers } from "../context/MembersContext";
 const MakeAndPack1 = () => {
   const { members, setMembers, loading } = useMembers();
 
-  // ✅ JSON → FlightTable 매핑 (필드명 정확히 맞춤)
   const mapToFlightTableData = (item) => {
     return {
       id: item.id ?? "-",
-      flight: item.flightNumber ?? "-",          // 예: "OZ 102"
-      destination: item.destination ?? "-",      // 예: "NRT"
-      aircraft: item.acversion ?? "-",           // 예: "OZA333E"
-      departureDate: item.departuredate ?? "-",  // 예: "2025-07-04"
-      departureTime: item.departuretime ?? "-",  // ✅ departuretime으로 수정
-      startTime: item.arrivaltime ?? "-",        // 필요 시 유지
-      bool_complete1: item.bool_complete1 ?? 0,  // 체크박스 상태
+      flight: item.flightNumber ?? "-",
+      destination: item.destination ?? "-",
+      aircraft: item.acversion ?? "-",
+      departureDate: item.departuredate ?? "-",
+      departureTime: item.departuretime ?? "-",  // ✅ departuretime 사용
+      startTime: item.arrivaltime ?? "-",        // 필요시 유지
+      bool_complete1: item.bool_complete1 ?? 0,
+      completeDate: item.completeDate ?? "-",    // UI 표시용
+      completeTime: item.completeTime ?? "-"     // UI 표시용
     };
   };
 
-  // ✅ API에서 받은 members를 UI용으로 변환
   const mappedMembers = members.map(mapToFlightTableData);
 
-  // ✅ PATCH API + Context 업데이트
+  // ✅ PATCH API + UI용 날짜/시간만 프론트에서 갱신
   const toggleBoolComplete = async (id, step, currentValue) => {
     const newValue = currentValue === 1 ? 0 : 1;
 
+    // ✅ UI용 완료일자/시간 (백엔드로는 안 보냄)
+    let uiCompleteDate = "-";
+    let uiCompleteTime = "-";
+
+    if (newValue === 1) {
+      const now = new Date();
+      const rawDate = now.toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+      uiCompleteDate = rawDate.replace(/\./g, "/").replace(/\s/g, "").replace(/\/$/, "");
+      uiCompleteTime = now.toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    }
+
     try {
+      // ✅ 백엔드에는 value만 전송
       const res = await fetch(
         `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            value: newValue // ✅ 완료일자/시간은 백엔드에서 자동 처리
-          }),
+          body: JSON.stringify({ value: newValue })
         }
       );
 
       if (!res.ok) throw new Error("API 요청 실패");
-
       console.log(`✅ bool_complete${step} 업데이트 성공`);
 
-      // ✅ Context 전역 상태 즉시 반영 → DashboardPage 자동 갱신
+      // ✅ 프론트 UI용 Context 업데이트 (날짜/시간은 프론트에서만 보임)
       setMembers((prev) =>
         prev.map((m) =>
           m.id === id
-            ? { ...m, [`bool_complete${step}`]: newValue }
+            ? {
+                ...m,
+                [`bool_complete${step}`]: newValue,
+                completeDate: uiCompleteDate,
+                completeTime: uiCompleteTime
+              }
             : m
         )
       );
