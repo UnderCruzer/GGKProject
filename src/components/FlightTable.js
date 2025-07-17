@@ -169,7 +169,6 @@ const FlightTable = ({ data, washOnly = false }) => {
                 <td data-label="비행편명">{renderCell('flight', f.flight)}</td>
                 <td data-label="목적지">{renderCell('destination', f.destination)}</td>
                 <td data-label="기종">{renderCell('aircraft', f.aircraft)}</td>
-                {washOnly && ( <td data-label="레그넘버" className="center-align"> {f.legNumber ?? '-'} </td> )}
                 <td data-label="출발날짜" className="nowrap-cell">{renderCell('departureDate', f.departureDate)}</td>
                 <td data-label="출발시간" className="center-align">{renderCell('departureTime', f.departureTime)}</td>
                 <td data-label="작업시작" className="center-align">{renderCell('startTime', f.startTime)}</td>
