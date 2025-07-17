@@ -7,7 +7,6 @@ import { useMembers } from "../context/MembersContext";
 
 const DashboardPage = () => {
   const { members, loading } = useMembers();
-  const { members, loading } = useMembers();
 
   if (loading) return <div>데이터 불러오는 중...</div>;
   if (loading) return <div>데이터 불러오는 중...</div>;
