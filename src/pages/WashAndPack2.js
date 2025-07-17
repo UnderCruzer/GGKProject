@@ -15,7 +15,7 @@ export const washAndPack2Data = [
         completed: 'N',
         note: 'ABCBCBAFBAFBAF',
         completeDate: '',
-        completeTime: '',
+        completeTime: '', 
     },
 ];
 
