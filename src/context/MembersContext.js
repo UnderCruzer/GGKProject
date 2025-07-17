@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 const MembersContext = createContext();
 
@@ -6,7 +6,7 @@ export const MembersProvider = ({ children }) => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // fetch 함수 분리 (버튼 · interval 둘 다 씀)
+  // fetch 함수: 버튼 클릭 시 호출 가능
   const fetchMembers = useCallback(async () => {
     setLoading(true);
     try {
@@ -20,26 +20,13 @@ export const MembersProvider = ({ children }) => {
     }
   }, []);
 
-  // 컴포넌트 마운트 시 + 1시간마다 fetch
+  // 최초 마운트 시 한번만 데이터 불러오기
   useEffect(() => {
-    fetchMembers(); // 최초
-
-    const interval = setInterval(() => {
-      fetchMembers(); // 1시간마다
-    }, 1000 * 60 * 60);
-
-    return () => clearInterval(interval);
+    fetchMembers();
   }, [fetchMembers]);
 
   return (
-    <MembersContext.Provider
-      value={{
-        members,
-        setMembers,
-        loading,
-        fetchMembers, // 버튼에서 쓸 수 있도록 전달
-      }}
-    >
+    <MembersContext.Provider value={{ members, loading, fetchMembers }}>
       {children}
     </MembersContext.Provider>
   );
