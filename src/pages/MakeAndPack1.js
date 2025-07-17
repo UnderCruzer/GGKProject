@@ -1,73 +1,66 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import FlightTable from "../components/FlightTable";
-
-// ✅ DB → FlightTable 매핑 (bool_complete1 추가)
-const mapToFlightTableData = (item) => {
-  return {
-    id: item.id ?? "-",
-    flight: item.flightNumber ?? "-",
-    destination: item.destination ?? "-",
-    aircraft: item.acversion ?? "-",
-    departureDate: item.departuredate ?? "-",
-    departureTime: item.arrivaltime ?? "-",
-    // ✅ bool_complete1 포함 (테스트 전용)
-    bool_complete1: item.bool_complete1 ?? 0,
-  };
-};
+import { useMembers } from "../context/MembersContext";
 
 const MakeAndPack1 = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { members, setMembers, loading } = useMembers();
 
-  // ✅ 최초 로딩 (API에서 데이터 가져오기)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("http://211.42.159.18:8080/api/members");
-        const json = await res.json();
-
-        console.log("✅ API 응답:", json);
-
-        const mapped = json.map((item) => mapToFlightTableData(item));
-        console.log("✅ 변환된 데이터:", mapped);
-
-        setData(mapped);
-      } catch (err) {
-        console.error("❌ 데이터 불러오기 실패:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // ✅ bool_complete1 토글 함수
-  const toggleBoolComplete1 = async (id, currentValue) => {
+  // ✅ PATCH + 완료일자/시간 포함
+  const toggleBoolComplete = async (id, step, currentValue) => {
     const newValue = currentValue === 1 ? 0 : 1;
+
+    // ✅ 완료 체크 시 현재 날짜/시간 생성
+    let completeDate = null;
+    let completeTime = null;
+
+    if (newValue === 1) {
+      const now = new Date();
+      const rawDate = now.toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+      completeDate = rawDate.replace(/\./g, "/").replace(/\s/g, "").replace(/\/$/, "");
+      completeTime = now.toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    }
 
     try {
       const res = await fetch(
-        `http://211.42.159.18:8080/api/members/${id}/complete/1`,
+        `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ value: newValue }),
+          body: JSON.stringify({
+            value: newValue,
+            completeDate,
+            completeTime
+          }),
         }
       );
 
       if (!res.ok) throw new Error("API 요청 실패");
 
-      console.log("✅ bool_complete1 업데이트 성공");
+      console.log(`✅ bool_complete${step} + 완료일시 업데이트 성공`);
 
-      // ✅ 로컬 state 즉시 반영
-      setData((prev) =>
+      // ✅ Context 전역 상태 즉시 반영 → DashboardPage 자동 갱신
+      setMembers((prev) =>
         prev.map((m) =>
-          m.id === id ? { ...m, bool_complete1: newValue } : m
+          m.id === id
+            ? {
+                ...m,
+                [`bool_complete${step}`]: newValue,
+                completeDate,
+                completeTime,
+              }
+            : m
         )
       );
     } catch (err) {
-      console.error("❌ bool_complete1 업데이트 실패:", err);
+      console.error("❌ bool_complete 업데이트 실패:", err);
       alert("업데이트 실패");
     }
   };
@@ -76,19 +69,11 @@ const MakeAndPack1 = () => {
 
   return (
     <div>
-      <h2
-        style={{
-          textAlign: "center",
-          marginTop: "20px",
-          marginBottom: "30px",
-          fontSize: "24px",
-        }}
-      >
-        Make and Pack 1 (bool_complete1 테스트)
+      <h2 style={{ textAlign: "center", margin: "20px 0", fontSize: "24px" }}>
+        Make and Pack 1
       </h2>
 
-      {/* ✅ FlightTable에 bool_complete1 토글 함수 넘김 */}
-      <FlightTable data={data} toggleBoolComplete1={toggleBoolComplete1} />
+      <FlightTable data={members} toggleBoolComplete={toggleBoolComplete} />
     </div>
   );
 };
