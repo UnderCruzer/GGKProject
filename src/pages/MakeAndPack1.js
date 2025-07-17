@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import FlightTable from "../components/FlightTable";
 import { useMembers } from "../context/MembersContext";
 
@@ -29,6 +29,17 @@ const formatTime = (dateObj) => {
 
 const MakeAndPack1 = () => {
   const { members, setMembers, loading } = useMembers();
+  // ⭐️ [수정] 컴포넌트 마운트 상태를 추적하기 위한 ref 추가
+  const isMounted = useRef(true);
+
+  // ⭐️ [수정] 컴포넌트가 언마운트될 때 isMounted ref를 false로 설정
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
 
   // ✅ 백엔드 데이터 → 화면 표시용 데이터 변환
   const mapToFlightTableData = (item) => {
@@ -66,72 +77,78 @@ const MakeAndPack1 = () => {
 
   // ✅ 완료 체크 토글 (백엔드에는 bool만 전송)
   const toggleBoolComplete = async (id, step, currentValue) => {
-  const newValue = currentValue === 1 ? 0 : 1;
+    const newValue = currentValue === 1 ? 0 : 1;
 
-  // UI에만 표시할 완료일자/시간
-  let uiCompleteDate = "-";
-  let uiCompleteTime = "-";
-  if (newValue === 1) {
-    const now = new Date();
-    const rawDate = now.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-    uiCompleteDate = rawDate.replace(/\./g, "/").replace(/\s/g, "").replace(/\/$/, "");
-    uiCompleteTime = now.toLocaleTimeString("ko-KR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  }
-
-  try {
-    const res = await fetch(
-      `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ value: newValue }),
-      }
-    );
-
-    if (!res.ok) {
-      console.error("❌ API 응답 오류:", await res.text());
-      alert("백엔드 업데이트 실패");
-      return;
+    // UI에만 표시할 완료일자/시간
+    let uiCompleteDate = "-";
+    let uiCompleteTime = "-";
+    if (newValue === 1) {
+      const now = new Date();
+      uiCompleteDate = now.toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).replace(/\.\s*/g, "/").replace(/\/$/, "");
+      uiCompleteTime = now.toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
     }
 
-    console.log(`✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`);
+    try {
+      const res = await fetch(
+        `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ value: newValue }),
+        }
+      );
 
-    // ✅ prev 검증 + 안전 업데이트
-    setMembers((prev) => {
-      if (!Array.isArray(prev)) {
-        console.error("❌ prev가 배열이 아님:", prev);
-        return prev; // 잘못된 상태면 그대로 반환
+      // ⭐️ [수정] API 호출 후 컴포넌트가 언마운트되었다면 상태 업데이트를 중단
+      if (!isMounted.current) {
+        console.log("🔄 Component unmounted after fetch. State update was cancelled.");
+        return;
       }
 
-      const updated = prev.map((m) => {
-        if (Number(m.id) === Number(id)) {
-          console.log("🔄 업데이트 대상:", m);
-          return {
-            ...m,
-            [`bool_complete${step}`]: newValue,
-            completeDate: uiCompleteDate,
-            completeTime: uiCompleteTime,
-          };
-        }
-        return m;
-      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("❌ API 응답 오류:", errorText);
+        return;
+      }
 
-      console.log("✅ 업데이트 후 members:", updated);
-      return updated;
-    });
-  } catch (err) {
-    console.error("❌ 네트워크/로직 오류:", err);
-    alert("업데이트 실패");
-  }
-};
+      console.log(`✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`);
+
+      if (typeof setMembers !== 'function') {
+        console.error("❌ CRITICAL: setMembers is not a function.");
+        return;
+      }
+
+      setMembers((prev) => {
+        if (!Array.isArray(prev)) {
+          console.error("❌ prev가 배열이 아님:", prev);
+          return prev;
+        }
+
+        const updated = prev.map((m) => {
+          if (Number(m.id) === Number(id)) {
+            return {
+              ...m,
+              [`bool_complete${step}`]: newValue,
+              completeDate: uiCompleteDate,
+              completeTime: uiCompleteTime,
+            };
+          }
+          return m;
+        });
+
+        return updated;
+      });
+    } catch (err) {
+      console.error("❌ 네트워크/로직 오류:", err);
+    }
+  };
 
   if (loading) return <div>데이터 불러오는 중...</div>;
 
@@ -140,7 +157,6 @@ const MakeAndPack1 = () => {
       <h2 style={{ textAlign: "center", margin: "20px 0", fontSize: "24px" }}>
         Make and Pack 1
       </h2>
-
       <FlightTable data={mappedMembers} toggleBoolComplete={toggleBoolComplete} />
     </div>
   );
