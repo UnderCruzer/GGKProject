@@ -41,8 +41,7 @@ const mapToFlightTableData = (item) => {
 
   // ✅ 완료 여부 (WashAndPack은 7~8 중 하나라도 1이면 완료)
   const isCompleted =
-    Number(item.bool_complete7) === 1 ||
-    Number(item.bool_complete8) === 1;
+    Number(item.bool_complete7) === 1;
 
   return {
     id: item.id ?? "-",

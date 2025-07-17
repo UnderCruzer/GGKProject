@@ -11,7 +11,6 @@ const DashboardTable = ({ data }) => {
     'bool_complete1',
     'bool_complete2',
     'bool_complete3',
-    'bool_complete4',
     'bool_complete5',
     'bool_complete6',
     'bool_complete7',
