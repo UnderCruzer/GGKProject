@@ -117,7 +117,7 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false }) => {
                 <td>{renderCell("flight", f.flight)}</td>
                 <td>{renderCell("destination", f.destination)}</td>
                 <td>{renderCell("aircraft", f.aircraft)}</td>
-                {washOnly && ( <td data-label="레그넘버" className="center-align"> {f.legNumber ?? '-'} </td> )} 
+                {washOnly && ( <td data-label="레그넘버" className="center-align"> {f.regNumber ?? '-'} </td> )} 
                 <td>{renderCell("departureDate", f.departureDate)}</td>
                 <td className="center-align">
                   {renderCell("departureTime", f.departureTime)}
