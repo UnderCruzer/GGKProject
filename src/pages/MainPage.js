@@ -19,7 +19,6 @@ const MainPage = () => {
           <button className="department-button" onClick={() => navigate('/make-pack1')}>MNP_EY_COLD</button>
           <button className="department-button" onClick={() => navigate('/make-pack2')}>MNP_BC_COLD</button>
           <button className="department-button" onClick={() => navigate('/make-pack3')}>MNP_BC_HOT</button>
-          <button className="department-button" onClick={() => navigate('/make-pack4')}>MNP_EY_HOT</button>
         </div>
         <div className="department-column">
           <h2>Pick and Pack 부서 페이지</h2>
