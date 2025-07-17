@@ -25,7 +25,7 @@ const renderCell = (key, value) => {
   return <input type="text" defaultValue={value} />;
 };
 
-const FlightTable = ({ data, toggleBoolComplete, washOnly = false }) => {
+const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = false }) => {
   const [flightFilter, setFlightFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
   const [completedFilter, setCompletedFilter] = useState("");
@@ -104,6 +104,12 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false }) => {
               <th className="center-align">작업시작</th>
               <th className="center-align">준비시간</th>
               <th className="center-align">작업종료</th>
+              {makeOnly && <th>카트 MEAL</th>}
+              {makeOnly && <th>카트 EQ</th>}
+              {makeOnly && <th>카트 GLSS</th>}
+              {makeOnly && <th>카트 EY</th>}
+              {makeOnly && <th>카트 LINNEN</th>}
+              {makeOnly && <th>카트 S/T SET</th>}
               <th className="center-align">완료</th>
               <th>주석</th>
               <th>완료일자</th>
@@ -127,7 +133,12 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false }) => {
                 </td>
                 <td className="center-align">{f.prepDays ?? -1}</td>
                 <td className="center-align">{renderCell("endTime", f.endTime)}</td>
-
+                {makeOnly &&  ( <td data-label="카트 MEAL" className="center-align"> {f.cart_meal} </td>)}
+                {makeOnly &&  ( <td data-label="카트 EQ" className="center-align"> {f.cart_eq} </td>)}
+                {makeOnly &&  ( <td data-label="카트 GLSS" className="center-align"> {f.cart_glss} </td>)}
+                {makeOnly &&  ( <td data-label="카트 EY" className="center-align"> {f.cart_ey} </td>)}
+                {makeOnly &&  ( <td data-label="카트 LINNEN" className="center-align"> {f.cart_linnen} </td>)}
+                {makeOnly &&  ( <td data-label="카트 S/T SET" className="center-align"> {f.cart_stset} </td>)}
                 {/* ✅ bool_complete1 연동 체크박스 */}
                 <td className="center-align">
                   <input
