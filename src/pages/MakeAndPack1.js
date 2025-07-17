@@ -5,28 +5,26 @@ import { useMembers } from "../context/MembersContext";
 const MakeAndPack1 = () => {
   const { members, setMembers, loading } = useMembers();
 
-  // ✅ PATCH + 완료일자/시간 포함
+  // ✅ JSON → FlightTable 매핑 (필드명 정확히 맞춤)
+  const mapToFlightTableData = (item) => {
+    return {
+      id: item.id ?? "-",
+      flight: item.flightNumber ?? "-",          // 예: "OZ 102"
+      destination: item.destination ?? "-",      // 예: "NRT"
+      aircraft: item.acversion ?? "-",           // 예: "OZA333E"
+      departureDate: item.departuredate ?? "-",  // 예: "2025-07-04"
+      departureTime: item.departuretime ?? "-",  // ✅ departuretime으로 수정
+      startTime: item.arrivaltime ?? "-",        // 필요 시 유지
+      bool_complete1: item.bool_complete1 ?? 0,  // 체크박스 상태
+    };
+  };
+
+  // ✅ API에서 받은 members를 UI용으로 변환
+  const mappedMembers = members.map(mapToFlightTableData);
+
+  // ✅ PATCH API + Context 업데이트
   const toggleBoolComplete = async (id, step, currentValue) => {
     const newValue = currentValue === 1 ? 0 : 1;
-
-    // ✅ 완료 체크 시 현재 날짜/시간 생성
-    let completeDate = null;
-    let completeTime = null;
-
-    if (newValue === 1) {
-      const now = new Date();
-      const rawDate = now.toLocaleDateString("ko-KR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
-      completeDate = rawDate.replace(/\./g, "/").replace(/\s/g, "").replace(/\/$/, "");
-      completeTime = now.toLocaleTimeString("ko-KR", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-    }
 
     try {
       const res = await fetch(
@@ -35,25 +33,20 @@ const MakeAndPack1 = () => {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            value: newValue,
+            value: newValue // ✅ 완료일자/시간은 백엔드에서 자동 처리
           }),
         }
       );
 
       if (!res.ok) throw new Error("API 요청 실패");
 
-      console.log(`✅ bool_complete${step} + 완료일시 업데이트 성공`);
+      console.log(`✅ bool_complete${step} 업데이트 성공`);
 
       // ✅ Context 전역 상태 즉시 반영 → DashboardPage 자동 갱신
       setMembers((prev) =>
         prev.map((m) =>
           m.id === id
-            ? {
-                ...m,
-                [`bool_complete${step}`]: newValue,
-                completeDate,
-                completeTime,
-              }
+            ? { ...m, [`bool_complete${step}`]: newValue }
             : m
         )
       );
@@ -67,11 +60,19 @@ const MakeAndPack1 = () => {
 
   return (
     <div>
-      <h2 style={{ textAlign: "center", margin: "20px 0", fontSize: "24px" }}>
+      <h2
+        style={{
+          textAlign: "center",
+          marginTop: "20px",
+          marginBottom: "30px",
+          fontSize: "24px",
+        }}
+      >
         Make and Pack 1
       </h2>
 
-      <FlightTable data={members} toggleBoolComplete={toggleBoolComplete} />
+      {/* ✅ 변환된 데이터 + 완료 토글 함수 전달 */}
+      <FlightTable data={mappedMembers} toggleBoolComplete={toggleBoolComplete} />
     </div>
   );
 };
