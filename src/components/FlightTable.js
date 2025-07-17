@@ -28,7 +28,7 @@ const renderCell = (key, value) => {
 };
 
 // 상태 관리 로직
-const FlightTable = ({ data, washOnly = false }) => {
+const FlightTable = ({ data, washOnly = false, toggleBoolComplete }) => {
   // 비행편, 도착지, 완료 여부를 필터링하기 위한 상태
   // 필터 입력을 바꾸면 값이 변경되면서 필터링된 데이터가 보여진다.
   const [flightFilter, setFlightFilter] = useState('');
