@@ -30,6 +30,14 @@ const formatTime = (dateObj) => {
 const MakeAndPack1 = () => {
   const { members, setMembers, loading } = useMembers();
 
+    console.log("DEBUG >> useMembers() in MakeAndPack1:", {
+    membersType: typeof members,
+    setMembersType: typeof setMembers,
+    setMembersValue: setMembers,
+    membersLength: members?.length,
+    loading,
+  });
+
   // ✅ 백엔드 데이터 → 화면 표시용 데이터 변환
   const mapToFlightTableData = (item) => {
     const baseDate = new Date(item.departuredate ?? "1970-01-01");
