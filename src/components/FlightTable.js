@@ -25,7 +25,7 @@ const renderCell = (key, value) => {
   return <input type="text" defaultValue={value} />;
 };
 
-const FlightTable = ({ data, toggleBoolComplete }) => {
+const FlightTable = ({ data, toggleBoolComplete, washOnly = false }) => {
   const [flightFilter, setFlightFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
   const [completedFilter, setCompletedFilter] = useState("");
@@ -98,6 +98,7 @@ const FlightTable = ({ data, toggleBoolComplete }) => {
               <th>비행편명</th>
               <th>목적지</th>
               <th>기종</th>
+              {washOnly && <th>레그넘버</th>}
               <th className="center-align">출발날짜</th>
               <th className="center-align">출발시간</th>
               <th className="center-align">작업시작</th>
@@ -116,6 +117,7 @@ const FlightTable = ({ data, toggleBoolComplete }) => {
                 <td>{renderCell("flight", f.flight)}</td>
                 <td>{renderCell("destination", f.destination)}</td>
                 <td>{renderCell("aircraft", f.aircraft)}</td>
+                {washOnly && ( <td data-label="레그넘버" className="center-align"> {f.legNumber ?? '-'} </td> )} 
                 <td>{renderCell("departureDate", f.departureDate)}</td>
                 <td className="center-align">
                   {renderCell("departureTime", f.departureTime)}
