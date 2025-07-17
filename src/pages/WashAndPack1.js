@@ -48,7 +48,7 @@ const mapToFlightTableData = (item) => {
     flight: item.flightNumber ?? "-",         // 편명
     destination: item.destination ?? "-",     // 목적지
     aircraft: item.acversion ?? "-",          // 기종
-    regNumber: item.ac_reg ?? "-",         // 레그넘버 
+    regNumber: item.ac_Reg ?? "-",         // 레그넘버 
     departureDate: item.departuredate ?? "-", // 출발날짜
     departureTime: arrivalTime ?? "-",        // 출발시간
     startTime: startTime,                     // 출발 -8시간
