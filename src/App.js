@@ -8,7 +8,6 @@ import WashAndPack2 from './pages/WashAndPack2';
 import MakeAndPack1 from './pages/MakeAndPack1';
 import MakeAndPack2 from './pages/MakeAndPack2';
 import MakeAndPack3 from './pages/MakeAndPack3';
-import MakeAndPack4 from './pages/MakeAndPack4';
 import DashboardPage from './pages/DashboardPage';
 import AdminLogin from './pages/AdminLogin';
 import FileUpload from './pages/FileUpload';
@@ -32,7 +31,6 @@ function App() {
         <Route path="/make-pack1" element={<MakeAndPack1 />} />
         <Route path="/make-pack2" element={<MakeAndPack2 />} />
         <Route path="/make-pack3" element={<MakeAndPack3 />} />
-        <Route path="/make-pack4" element={<MakeAndPack4 />} />
 
         <Route path="/admin-login" element={<AdminLogin onLogin={() => setIsAuthenticated(true)}/>} />
           
