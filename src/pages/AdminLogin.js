@@ -65,9 +65,7 @@ const AdminLogin = ({ onLogin }) => {
           <button
             type="submit"
             className={`login-button ${password ? 'active' : ''}`}
-            disabled={loading}
-          >
-            Log in
+            disabled={loading}>Log in
           </button>
         </form>
       </div>
