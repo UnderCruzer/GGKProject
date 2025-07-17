@@ -35,86 +35,24 @@ const FlightTable = ({ data, washOnly = false }) => {
   const [destinationFilter, setDestinationFilter] = useState('');
   const [completedFilter, setCompletedFilter] = useState('');
 
-  // data 배열에서 flight, destination 필드를 각각 뽑아 고유값으로 만들고 다시 배열로 변환
-  // 필터 드롭다운 메뉴 등에 사용
+  // ✅ 필터 목록용 고유 값 추출
   const uniqueFlights = [...new Set(data.map(f => f.flight))];
   const uniqueDestinations = [...new Set(data.map(f => f.destination))];
 
-  // useState 초기값을 함수형으로 제공
-  // data를 순회하며 completed === 'Y'인 항목만 id를 키로 하는 객체를 생성
-  const [completionTimestamps, setCompletionTimestamps] = useState(() =>
-  data.reduce((acc, item) => {
-    if (item.completed === 'Y') {
-      acc[item.id] = {
-        date: item.completeDate,
-        time: item.completeTime,
-      };
-    }
-    return acc;
-  }, {})
-  );
-
-  const [completionStatus, setCompletionStatus] = useState(() =>
-  data.reduce((acc, item) => {
-    acc[item.id] = item.completed === 'Y';
-    return acc;
-  }, {})
-  );
-
+  // ✅ 필터링 로직 (bool_complete1 기준)
   const filteredData = data.filter(f =>
-     (flightFilter ? f.flight === flightFilter : true) &&
+    (flightFilter ? f.flight === flightFilter : true) &&
     (destinationFilter ? f.destination === destinationFilter : true) &&
     (completedFilter
-      ? (completionStatus[f.id] ? 'Y' : 'N') === completedFilter
+      ? (f.bool_complete1 === 1 ? 'Y' : 'N') === completedFilter
       : true)
   );
 
-
-// 핸들러 로직
-const handleCheckboxChange = (id) => { 
-  const nowChecked = !completionStatus[id];
-
-  setCompletionStatus((prev) => ({
-    ...prev,
-    [id]: nowChecked,
-  }));
-
-  setCompletionTimestamps((prev) => {
-    if (nowChecked) {
-      const now = new Date();
-      const rawDate = now.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      });
-      
-      const date = rawDate
-      .replace(/\./g, '/')
-      .replace(/\s/g, '')
-      .replace(/\/$/, '');
-
-      const time = now.toLocaleTimeString('ko-KR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
-
-       return {
-        ...prev,
-        [id]: { date, time },
-      };
-    } else {
-      const updated = { ...prev };
-      delete updated[id];
-      return updated;
-    }
-  });
-};
-
   return (
-      <div className="flight-tablecontainer">
-         <div className="filter-controls">
-          <label>
+    <div className="flight-tablecontainer">
+      {/* ✅ 필터 컨트롤 */}
+      <div className="filter-controls">
+        <label>
           비행편명:
           <select value={flightFilter} onChange={(e) => setFlightFilter(e.target.value)}>
             <option value="">전체</option>
@@ -144,6 +82,7 @@ const handleCheckboxChange = (id) => {
         </label>
       </div>
 
+      {/* ✅ 테이블 */}
       <div className="table-wrapper">
         <table className="flight-table">
           <thead>
@@ -158,10 +97,8 @@ const handleCheckboxChange = (id) => {
               <th className="center-align">작업시작</th>
               <th className="center-align">준비시간</th>
               <th className="center-align">작업종료</th>
-              <th className="center-align">완료</th>
+              <th className="center-align">완료(bool_complete1)</th>
               <th>주석</th>
-              <th className="center-align">완료일자</th>
-              <th className="center-align">완료시간</th>
             </tr>
           </thead>
           <tbody>
@@ -177,16 +114,17 @@ const handleCheckboxChange = (id) => {
                 <td data-label="작업시작" className="center-align">{renderCell('startTime', f.startTime)}</td>
                 <td data-label="준비시간" className="center-align">{f.prepDays ?? -1}</td>
                 <td data-label="작업종료" className="center-align">{renderCell('endTime', f.endTime)}</td>
+
+                {/* ✅ bool_complete1 연동 체크박스 */}
                 <td data-label="완료" className="center-align">
                   <input
                     type="checkbox"
-                    checked={completionStatus[f.id] || false}
-                    onChange={() => handleCheckboxChange(f.id)}
+                    checked={f.bool_complete1 === 1} // DB 값이 1이면 체크됨
+                    onChange={() => toggleBoolComplete(f.id, 1, f.bool_complete1)}
                   />
                 </td>
+
                 <td data-label="주석">{renderCell('note', f.note)}</td>
-                <td data-label="완료일자" className="center-align">{completionStatus[f.id] && completionTimestamps[f.id]?.date}</td>
-                <td data-label="완료시간" className="center-align">{completionStatus[f.id] && completionTimestamps[f.id]?.time}</td>
               </tr>
             ))}
           </tbody>
