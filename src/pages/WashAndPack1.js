@@ -49,6 +49,7 @@ const mapToFlightTableData = (item) => {
     flight: item.flightNumber ?? "-",         // 편명
     destination: item.destination ?? "-",     // 목적지
     aircraft: item.acversion ?? "-",          // 기종
+    legNumber: item.legNumber ?? "-",         // 레그넘버
     departureDate: item.departuredate ?? "-", // 출발날짜
     departureTime: arrivalTime ?? "-",        // 출발시간
     startTime: startTime,                     // 출발 -8시간
@@ -95,7 +96,7 @@ const WashAndPack1 = () => {
       <h2 style={{ textAlign: "center", marginTop: "20px", marginBottom: "30px", fontSize: "24px" }}>
         Wash and Pack 1 (DB 실시간)
       </h2>
-      <FlightTable data={data} />
+      <FlightTable data={data} washOnly={true}/>
     </div>
   );
 };

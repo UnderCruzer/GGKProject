@@ -28,7 +28,7 @@ const renderCell = (key, value) => {
 };
 
 // 상태 관리 로직
-const FlightTable = ({ data }) => {
+const FlightTable = ({ data, washOnly = false }) => {
   // 비행편, 도착지, 완료 여부를 필터링하기 위한 상태
   // 필터 입력을 바꾸면 값이 변경되면서 필터링된 데이터가 보여진다.
   const [flightFilter, setFlightFilter] = useState('');
@@ -152,6 +152,7 @@ const handleCheckboxChange = (id) => {
               <th>비행편명</th>
               <th>목적지</th>
               <th>기종</th>
+              {washOnly && <th>레그넘버</th>}
               <th>출발날짜</th>
               <th className="center-align">출발시간</th>
               <th className="center-align">작업시작</th>
@@ -170,6 +171,7 @@ const handleCheckboxChange = (id) => {
                 <td data-label="비행편명">{renderCell('flight', f.flight)}</td>
                 <td data-label="목적지">{renderCell('destination', f.destination)}</td>
                 <td data-label="기종">{renderCell('aircraft', f.aircraft)}</td>
+                {washOnly && ( <td data-label="레그넘버" className="center-align"> {f.legNumber ?? '-'} </td> )}
                 <td data-label="출발날짜" className="nowrap-cell">{renderCell('departureDate', f.departureDate)}</td>
                 <td data-label="출발시간" className="center-align">{renderCell('departureTime', f.departureTime)}</td>
                 <td data-label="작업시작" className="center-align">{renderCell('startTime', f.startTime)}</td>
