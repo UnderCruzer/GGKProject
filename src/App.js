@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// ⭐️ [수정] BrowserRouter를 Router로 사용하지 않고 직접 가져옵니다.
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import MainPage from './pages/MainPage';
 import PickAndPack1 from './pages/PickAndPack1';
@@ -21,9 +22,10 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
-    // ✅ 전역 상태 Provider로 모든 페이지 감싸기
-    <MembersProvider>
-      <Router>
+    // ⭐️ [수정] BrowserRouter를 최상위로 이동
+    <BrowserRouter>
+      {/* ⭐️ [수정] MembersProvider를 BrowserRouter 안으로 이동 */}
+      <MembersProvider>
         <Routes>
           {/* 기본 메인 페이지 */}
           <Route path="/" element={<MainPage />} /> 
@@ -60,8 +62,8 @@ function App() {
             }
           />
         </Routes>
-      </Router>
-    </MembersProvider>
+      </MembersProvider>
+    </BrowserRouter>
   );
 }
 
