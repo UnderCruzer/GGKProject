@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from "react";
+import FlightTable from "../components/FlightTable";
+
+// ✅ 안전한 시간 계산
 const calcTime = (baseDate, timeStr, offsetHours) => {
   if (!timeStr) return null;
   const [hours, minutes, seconds] = timeStr.split(":").map(Number);
@@ -25,7 +29,6 @@ const mapToFlightTableData = (item) => {
   const baseDate = new Date(item.departuredate ?? "1970-01-01");
   const arrivalTime = item.arrivaltime ?? null;
 
-  // ✅ 작업 시작/종료 계산
   const startTimeObj = calcTime(baseDate, arrivalTime, -8);
   const startTime = formatTime(startTimeObj);
 
@@ -36,12 +39,10 @@ const mapToFlightTableData = (item) => {
     endTime = formatTime(endTimeObj);
   }
 
-  // ✅ 완료 여부 (1~4 중 하나라도 1이면 완료)
+  // ✅ 완료 여부 (WashAndPack은 7~8 중 하나라도 1이면 완료)
   const isCompleted =
-    Number(item.bool_complete1) === 1 ||
-    Number(item.bool_complete2) === 1 ||
-    Number(item.bool_complete3) === 1 ||
-    Number(item.bool_complete4) === 1;
+    Number(item.bool_complete7) === 1 ||
+    Number(item.bool_complete8) === 1;
 
   return {
     id: item.id ?? "-",
@@ -60,7 +61,7 @@ const mapToFlightTableData = (item) => {
   };
 };
 
-const MakeAndPack1 = () => {
+const WashAndPack1 = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -92,11 +93,11 @@ const MakeAndPack1 = () => {
   return (
     <div>
       <h2 style={{ textAlign: "center", marginTop: "20px", marginBottom: "30px", fontSize: "24px" }}>
-        Make and Pack 1 (DB 실시간)
+        Wash and Pack 1 (DB 실시간)
       </h2>
       <FlightTable data={data} />
     </div>
   );
 };
 
-export default MakeAndPack1;
+export default WashAndPack1;
