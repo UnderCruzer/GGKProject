@@ -66,59 +66,72 @@ const MakeAndPack1 = () => {
 
   // ✅ 완료 체크 토글 (백엔드에는 bool만 전송)
   const toggleBoolComplete = async (id, step, currentValue) => {
-    const newValue = currentValue === 1 ? 0 : 1;
+  const newValue = currentValue === 1 ? 0 : 1;
 
-    // UI용 완료일자/시간
-    let uiCompleteDate = "-";
-    let uiCompleteTime = "-";
+  // UI에만 표시할 완료일자/시간
+  let uiCompleteDate = "-";
+  let uiCompleteTime = "-";
+  if (newValue === 1) {
+    const now = new Date();
+    const rawDate = now.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    uiCompleteDate = rawDate.replace(/\./g, "/").replace(/\s/g, "").replace(/\/$/, "");
+    uiCompleteTime = now.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  }
 
-    if (newValue === 1) {
-      const now = new Date();
-      const rawDate = now.toLocaleDateString("ko-KR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
-      uiCompleteDate = rawDate.replace(/\./g, "/").replace(/\s/g, "").replace(/\/$/, "");
-      uiCompleteTime = now.toLocaleTimeString("ko-KR", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
+  try {
+    const res = await fetch(
+      `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: newValue }),
+      }
+    );
+
+    if (!res.ok) {
+      console.error("❌ API 응답 오류:", await res.text());
+      alert("백엔드 업데이트 실패");
+      return;
     }
 
-    try {
-      // ✅ 백엔드에는 value만 전송
-      const res = await fetch(
-        `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ value: newValue })
+    console.log(`✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`);
+
+    // ✅ prev 검증 + 안전 업데이트
+    setMembers((prev) => {
+      if (!Array.isArray(prev)) {
+        console.error("❌ prev가 배열이 아님:", prev);
+        return prev; // 잘못된 상태면 그대로 반환
+      }
+
+      const updated = prev.map((m) => {
+        if (Number(m.id) === Number(id)) {
+          console.log("🔄 업데이트 대상:", m);
+          return {
+            ...m,
+            [`bool_complete${step}`]: newValue,
+            completeDate: uiCompleteDate,
+            completeTime: uiCompleteTime,
+          };
         }
-      );
+        return m;
+      });
 
-      if (!res.ok) throw new Error("API 요청 실패");
-      console.log(`✅ bool_complete${step} 업데이트 성공`);
-
-      // ✅ Context 업데이트 (프론트 화면에만 완료일자/시간 반영)
-      setMembers((prev) =>
-        prev.map((m) =>
-          m.id === id
-            ? {
-                ...m,
-                [`bool_complete${step}`]: newValue,
-                completeDate: uiCompleteDate,
-                completeTime: uiCompleteTime
-              }
-            : m
-        )
-      );
-    } catch (err) {
-      console.error("❌ bool_complete 업데이트 실패:", err);
-      alert("업데이트 실패");
-    }
-  };
+      console.log("✅ 업데이트 후 members:", updated);
+      return updated;
+    });
+  } catch (err) {
+    console.error("❌ 네트워크/로직 오류:", err);
+    alert("업데이트 실패");
+  }
+};
 
   if (loading) return <div>데이터 불러오는 중...</div>;
 
