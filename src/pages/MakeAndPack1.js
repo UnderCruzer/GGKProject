@@ -2,6 +2,29 @@ import React from "react";
 import FlightTable from "../components/FlightTable";
 import { useMembers } from "../context/MembersContext";
 
+// ✅ 안전한 시간 계산
+const calcTime = (baseDate, timeStr, offsetHours) => {
+  if (!timeStr) return null;
+  const [hours, minutes, seconds] = timeStr.split(":").map(Number);
+  if (isNaN(hours) || isNaN(minutes)) return null;
+
+  const dateObj = new Date(baseDate);
+  dateObj.setHours(hours);
+  dateObj.setMinutes(minutes);
+  dateObj.setSeconds(seconds || 0);
+
+  dateObj.setHours(dateObj.getHours() + offsetHours);
+  return dateObj;
+};
+
+// ✅ Date → HH:mm
+const formatTime = (dateObj) => {
+  if (!dateObj) return "-";
+  const h = String(dateObj.getHours()).padStart(2, "0");
+  const m = String(dateObj.getMinutes()).padStart(2, "0");
+  return `${h}:${m}`;
+};
+
 const MakeAndPack1 = () => {
   const { members, setMembers, loading } = useMembers();
 
