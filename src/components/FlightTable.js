@@ -25,14 +25,10 @@ const renderCell = (key, value) => {
   return <input type="text" defaultValue={value} />;
 };
 
-const FlightTable = ({ data, toggleBoolComplete }) => {
+const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = false }) => {
   const [flightFilter, setFlightFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
   const [completedFilter, setCompletedFilter] = useState("");
-
-  // ✅ 디버깅: props가 제대로 들어왔는지 확인
-  console.log("DEBUG >> FlightTable props.toggleBoolComplete:", toggleBoolComplete);
-  console.log("DEBUG >> FlightTable received data length:", data?.length);
 
   const uniqueFlights = [...new Set(data.map((f) => f.flight))];
   const uniqueDestinations = [...new Set(data.map((f) => f.destination))];
@@ -102,11 +98,18 @@ const FlightTable = ({ data, toggleBoolComplete }) => {
               <th>비행편명</th>
               <th>목적지</th>
               <th>기종</th>
+              {washOnly && <th>레그넘버</th>}
               <th className="center-align">출발날짜</th>
               <th className="center-align">출발시간</th>
               <th className="center-align">작업시작</th>
               <th className="center-align">준비시간</th>
               <th className="center-align">작업종료</th>
+              {makeOnly && <th>카트 MEAL</th>}
+              {makeOnly && <th>카트 EQ</th>}
+              {makeOnly && <th>카트 GLSS</th>}
+              {makeOnly && <th>카트 EY</th>}
+              {makeOnly && <th>카트 LINNEN</th>}
+              {makeOnly && <th>카트 S/T SET</th>}
               <th className="center-align">완료</th>
               <th>주석</th>
               <th>완료일자</th>
@@ -120,6 +123,7 @@ const FlightTable = ({ data, toggleBoolComplete }) => {
                 <td>{renderCell("flight", f.flight)}</td>
                 <td>{renderCell("destination", f.destination)}</td>
                 <td>{renderCell("aircraft", f.aircraft)}</td>
+                {washOnly && ( <td data-label="레그넘버" className="center-align"> {f.regNumber} </td> )} 
                 <td>{renderCell("departureDate", f.departureDate)}</td>
                 <td className="center-align">
                   {renderCell("departureTime", f.departureTime)}
@@ -129,20 +133,20 @@ const FlightTable = ({ data, toggleBoolComplete }) => {
                 </td>
                 <td className="center-align">{f.prepDays ?? -1}</td>
                 <td className="center-align">{renderCell("endTime", f.endTime)}</td>
-
+                {makeOnly &&  ( <td data-label="카트 MEAL" className="center-align"> {f.cart_meal} </td>)}
+                {makeOnly &&  ( <td data-label="카트 EQ" className="center-align"> {f.cart_eq} </td>)}
+                {makeOnly &&  ( <td data-label="카트 GLSS" className="center-align"> {f.cart_glss} </td>)}
+                {makeOnly &&  ( <td data-label="카트 EY" className="center-align"> {f.cart_ey} </td>)}
+                {makeOnly &&  ( <td data-label="카트 LINNEN" className="center-align"> {f.cart_linnen} </td>)}
+                {makeOnly &&  ( <td data-label="카트 S/T SET" className="center-align"> {f.cart_stset} </td>)}
                 {/* ✅ bool_complete1 연동 체크박스 */}
                 <td className="center-align">
                   <input
                     type="checkbox"
                     checked={f.bool_complete1 === 1}
-                    onChange={() => {
-                      console.log("DEBUG >> checkbox changed:", {
-                        id: f.id,
-                        step: 1,
-                        currentValue: f.bool_complete1,
-                      });
-                      toggleBoolComplete(f.id, 1, f.bool_complete1);
-                    }}
+                    onChange={() =>
+                      toggleBoolComplete(f.id, 1, f.bool_complete1)
+                    }
                   />
                 </td>
 
