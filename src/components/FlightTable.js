@@ -54,7 +54,7 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = fa
     <div className="flight-tablecontainer">
       <div className="filter-controls">
         <label>
-          비행편명:
+          비행편명 : 
           <select
             value={flightFilter}
             onChange={(e) => setFlightFilter(e.target.value)}
@@ -69,7 +69,7 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = fa
         </label>
 
         <label>
-          목적지:
+          목적지 : 
           <select
             value={destinationFilter}
             onChange={(e) => setDestinationFilter(e.target.value)}
@@ -84,7 +84,7 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = fa
         </label>
 
         <label>
-          완료 여부:
+          완료 여부 : 
           <select
             value={completedFilter}
             onChange={(e) => setCompletedFilter(e.target.value)}
@@ -96,7 +96,7 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = fa
         </label>
 
         <label>
-          날짜 :
+          날짜 : 
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
