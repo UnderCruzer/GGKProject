@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import FlightTable from "../components/FlightTable";
 import { useMembers } from "../context/MembersContext";
 
@@ -27,13 +27,18 @@ const formatTime = (dateObj) => {
   return `${h}:${m}:${s}`;
 };
 
-const MakeAndPack1 = () => {
+/**
+ * ✅ 공통 컴포넌트 (mode만 다르게 넘겨서 사용)
+ * mode=1 → MakeAndPack1
+ * mode=2 → MakeAndPack2
+ * mode=3 → MakeAndPack3
+ */
+const MakeAndPackPage = ({ mode }) => {
   const { members, setMembers, loading } = useMembers();
 
-    console.log("DEBUG >> useMembers() in MakeAndPack1:", {
+  console.log(`DEBUG >> useMembers() in MakeAndPack${mode}:`, {
     membersType: typeof members,
     setMembersType: typeof setMembers,
-    setMembersValue: setMembers,
     membersLength: members?.length,
     loading,
   });
@@ -55,6 +60,12 @@ const MakeAndPack1 = () => {
       endTime = formatTime(endTimeObj);
     }
 
+    // ✅ mode별 완료 필드 선택
+    const completeValue =
+      mode === 1 ? item.bool_complete1 ?? 0 :
+      mode === 2 ? item.bool_complete2 ?? 0 :
+      mode === 3 ? item.bool_complete3 ?? 0 : 0;
+
     return {
       id: item.id ?? "-",
       flight: item.flightNumber ?? "-",
@@ -62,9 +73,9 @@ const MakeAndPack1 = () => {
       aircraft: item.acversion ?? "-",
       departureDate: item.departuredate ?? "-",
       departureTime: item.departuretime ?? "-",
-      startTime: startTime,   // ✅ 출발 -6h
-      endTime: endTime,       // ✅ 작업시작 +2h
-      bool_complete1: item.bool_complete1 ?? 0,
+      startTime,
+      endTime,
+      [`bool_complete${mode}`]: completeValue,  // ✅ mode별 bool 저장
       completeDate: item.completeDate ?? "-",
       completeTime: item.completeTime ?? "-"
     };
@@ -73,7 +84,7 @@ const MakeAndPack1 = () => {
   const mappedMembers = members.map(mapToFlightTableData);
 
   // ✅ 완료 체크 토글 (백엔드에는 bool만 전송)
-  const toggleBoolComplete = async (id, step, currentValue) => {
+  const toggleBoolComplete = async (id, currentMode, currentValue) => {
     const newValue = currentValue === 1 ? 0 : 1;
 
     // UI에만 표시할 완료일자/시간
@@ -94,8 +105,9 @@ const MakeAndPack1 = () => {
     }
 
     try {
+      // ✅ mode값 그대로 사용
       const res = await fetch(
-        `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
+        `http://211.42.159.18:8080/api/members/${id}/complete/${currentMode}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -109,14 +121,16 @@ const MakeAndPack1 = () => {
         return;
       }
 
-      console.log(`✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`);
+      console.log(
+        `✅ bool_complete${currentMode} 업데이트 성공 (id=${id}, mode=${currentMode}, newValue=${newValue})`
+      );
 
-      if (typeof setMembers !== 'function') {
+      if (typeof setMembers !== "function") {
         console.error("❌ CRITICAL: setMembers is not a function.");
         return;
       }
 
-      // ⭐️ [수정] 상태를 즉시 업데이트하도록 수정
+      // ✅ 상태 즉시 업데이트
       setMembers((prev) => {
         if (!Array.isArray(prev)) {
           console.error("❌ prev가 배열이 아님:", prev);
@@ -127,7 +141,7 @@ const MakeAndPack1 = () => {
           if (Number(m.id) === Number(id)) {
             return {
               ...m,
-              [`bool_complete${step}`]: newValue,
+              [`bool_complete${currentMode}`]: newValue,
               completeDate: uiCompleteDate,
               completeTime: uiCompleteTime,
             };
@@ -147,11 +161,15 @@ const MakeAndPack1 = () => {
   return (
     <div>
       <h2 style={{ textAlign: "center", margin: "20px 0", fontSize: "24px" }}>
-        Make and Pack 1
+        Make and Pack {mode}
       </h2>
-      <FlightTable data={mappedMembers} toggleBoolComplete={toggleBoolComplete} />
+      <FlightTable
+        data={mappedMembers}
+        toggleBoolComplete={toggleBoolComplete}
+        mode={mode}  // ✅ FlightTable에도 mode 전달
+      />
     </div>
   );
 };
 
-export default MakeAndPack1;
+export default MakeAndPackPage;
