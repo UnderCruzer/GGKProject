@@ -154,7 +154,6 @@ const MakeAndPack3 = () => {
       <FlightTable
         data={mappedMembers}
         toggleBoolComplete={toggleBoolComplete}
-        mode={3}  // ✅ FlightTable에 mode=3 전달
       />
     </div>
   );
