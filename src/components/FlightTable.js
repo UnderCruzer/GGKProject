@@ -25,31 +25,18 @@ const renderCell = (key, value) => {
   return <input type="text" defaultValue={value} />;
 };
 
-/** ✅ 공통 완료 체크박스 컴포넌트 */
-const CompleteToggleButton = ({ flight, mode, toggleBoolComplete }) => {
-  // ✅ 현재 완료 여부 선택
-  const isCompleted =
-    mode === 1 ? flight.bool_complete1 === 1 :
-    mode === 2 ? flight.bool_complete2 === 1 :
-    mode === 3 ? flight.bool_complete3 === 1 : false;
-
-  // ✅ 현재 값 선택
-  const currentValue =
-    mode === 1 ? flight.bool_complete1 :
-    mode === 2 ? flight.bool_complete2 :
-    mode === 3 ? flight.bool_complete3 : 0;
+/** ✅ 간단 완료 체크박스 (mode 제거 버전) */
+const CompleteToggleButton = ({ flight, toggleBoolComplete }) => {
+  // ✅ flight 객체 내 완료 필드 자동 탐색
+  const completeField = Object.keys(flight).find((k) => k.startsWith("bool_complete"));
+  const isCompleted = flight[completeField] === 1;
+  const currentValue = flight[completeField] ?? 0;
 
   const handleToggle = () => {
-    toggleBoolComplete(flight.id, mode, currentValue);
+    toggleBoolComplete(flight.id, undefined, currentValue);
   };
 
-  return (
-    <input
-      type="checkbox"
-      checked={isCompleted}
-      onChange={handleToggle}
-    />
-  );
+  return <input type="checkbox" checked={isCompleted} onChange={handleToggle} />;
 };
 
 const FlightTable = ({
@@ -57,7 +44,6 @@ const FlightTable = ({
   toggleBoolComplete,
   washOnly = false,
   makeOnly = false,
-  mode = 1 // ✅ 기본은 makeandpack1
 }) => {
   const [flightFilter, setFlightFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
@@ -70,27 +56,30 @@ const FlightTable = ({
   const todayStr = new Date().toISOString().slice(0, 10);
   const tomorrowStr = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
-  const filteredData = useMemo(() => data.filter((f) => {
-    const matchFlight = flightFilter ? f.flight === flightFilter : true;
-    const matchDest = destinationFilter ? f.destination === destinationFilter : true;
+  const filteredData = useMemo(
+    () =>
+      data.filter((f) => {
+        const matchFlight = flightFilter ? f.flight === flightFilter : true;
+        const matchDest = destinationFilter ? f.destination === destinationFilter : true;
 
-    // ✅ 완료 여부는 mode별로 동적 선택
-    const completedValue =
-      mode === 1 ? f.bool_complete1 :
-      mode === 2 ? f.bool_complete2 :
-      mode === 3 ? f.bool_complete3 : 0;
+        // ✅ flight 내 완료 필드 자동 감지
+        const completeField = Object.keys(f).find((k) => k.startsWith("bool_complete"));
+        const completedValue = f[completeField] ?? 0;
+        const isCompleted = completedValue === 1;
+        const matchCompleted = !completedFilter
+          ? true
+          : completedFilter === "Y"
+          ? isCompleted
+          : !isCompleted;
 
-    const isCompleted = completedValue === 1;
-    const matchCompleted = !completedFilter
-      ? true
-      : (completedFilter === "Y" ? isCompleted : !isCompleted);
+        const depDate = f.departureDate?.slice(0, 10) ?? "";
+        const targetDate = dateFilter === "today" ? todayStr : tomorrowStr;
+        const matchDate = dateFilter === "all" ? true : depDate === targetDate;
 
-    const depDate = f.departureDate?.slice(0,10) ?? "";
-    const targetDate = dateFilter === "today" ? todayStr : tomorrowStr;
-    const matchDate = dateFilter === "all" ? true : depDate === targetDate;
-
-    return matchFlight && matchDest && matchCompleted && matchDate;
-  }), [data, flightFilter, destinationFilter, completedFilter, dateFilter, todayStr, tomorrowStr, mode]);
+        return matchFlight && matchDest && matchCompleted && matchDate;
+      }),
+    [data, flightFilter, destinationFilter, completedFilter, dateFilter, todayStr, tomorrowStr]
+  );
 
   return (
     <div className="flight-tablecontainer">
@@ -98,10 +87,7 @@ const FlightTable = ({
       <div className="filter-controls">
         <label>
           비행편명 :
-          <select
-            value={flightFilter}
-            onChange={(e) => setFlightFilter(e.target.value)}
-          >
+          <select value={flightFilter} onChange={(e) => setFlightFilter(e.target.value)}>
             <option value="">전체</option>
             {uniqueFlights.map((flight) => (
               <option key={flight} value={flight}>
@@ -113,10 +99,7 @@ const FlightTable = ({
 
         <label>
           목적지 :
-          <select
-            value={destinationFilter}
-            onChange={(e) => setDestinationFilter(e.target.value)}
-          >
+          <select value={destinationFilter} onChange={(e) => setDestinationFilter(e.target.value)}>
             <option value="">전체</option>
             {uniqueDestinations.map((dest) => (
               <option key={dest} value={dest}>
@@ -128,10 +111,7 @@ const FlightTable = ({
 
         <label>
           완료 여부 :
-          <select
-            value={completedFilter}
-            onChange={(e) => setCompletedFilter(e.target.value)}
-          >
+          <select value={completedFilter} onChange={(e) => setCompletedFilter(e.target.value)}>
             <option value="">전체</option>
             <option value="Y">✅ 완료</option>
             <option value="N">❌ 미완료</option>
@@ -140,10 +120,7 @@ const FlightTable = ({
 
         <label>
           날짜 :
-          <select
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
-          >
+          <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
             <option value="today">오늘</option>
             <option value="tomorrow">내일</option>
             <option value="all">전체</option>
@@ -202,13 +179,9 @@ const FlightTable = ({
                 {makeOnly && <td>{f.cart_linnen}</td>}
                 {makeOnly && <td>{f.cart_stset}</td>}
 
-                {/* ✅ 공통 체크박스 */}
+                {/* ✅ 체크박스 (mode 제거 버전) */}
                 <td className="center-align">
-                  <CompleteToggleButton
-                    flight={f}
-                    mode={mode}
-                    toggleBoolComplete={toggleBoolComplete}
-                  />
+                  <CompleteToggleButton flight={f} toggleBoolComplete={toggleBoolComplete} />
                 </td>
 
                 <td>{renderCell("note", f.note)}</td>
