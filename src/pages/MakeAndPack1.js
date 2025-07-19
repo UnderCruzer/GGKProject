@@ -27,16 +27,10 @@ const formatTime = (dateObj) => {
   return `${h}:${m}:${s}`;
 };
 
-/**
- * ✅ 공통 컴포넌트 (mode만 다르게 넘겨서 사용)
- * mode=1 → MakeAndPack1
- * mode=2 → MakeAndPack2
- * mode=3 → MakeAndPack3
- */
-const MakeAndPackPage = ({ mode }) => {
+const MakeAndPack1 = () => {
   const { members, setMembers, loading } = useMembers();
 
-  console.log(`DEBUG >> useMembers() in MakeAndPack${mode}:`, {
+  console.log(`DEBUG >> useMembers() in MakeAndPack1:`, {
     membersType: typeof members,
     setMembersType: typeof setMembers,
     membersLength: members?.length,
@@ -60,12 +54,6 @@ const MakeAndPackPage = ({ mode }) => {
       endTime = formatTime(endTimeObj);
     }
 
-    // ✅ mode별 완료 필드 선택
-    const completeValue =
-      mode === 1 ? item.bool_complete1 ?? 0 :
-      mode === 2 ? item.bool_complete2 ?? 0 :
-      mode === 3 ? item.bool_complete3 ?? 0 : 0;
-
     return {
       id: item.id ?? "-",
       flight: item.flightNumber ?? "-",
@@ -75,16 +63,16 @@ const MakeAndPackPage = ({ mode }) => {
       departureTime: item.departuretime ?? "-",
       startTime,
       endTime,
-      [`bool_complete${mode}`]: completeValue,  // ✅ mode별 bool 저장
+      bool_complete1: item.bool_complete1 ?? 0, // ✅ 고정
       completeDate: item.completeDate ?? "-",
-      completeTime: item.completeTime ?? "-"
+      completeTime: item.completeTime ?? "-",
     };
   };
 
   const mappedMembers = members.map(mapToFlightTableData);
 
-  // ✅ 완료 체크 토글 (백엔드에는 bool만 전송)
-  const toggleBoolComplete = async (id, currentMode, currentValue) => {
+  // ✅ 완료 체크 토글 (step=1 고정)
+  const toggleBoolComplete = async (id, step = 1, currentValue) => {
     const newValue = currentValue === 1 ? 0 : 1;
 
     // UI에만 표시할 완료일자/시간
@@ -92,11 +80,14 @@ const MakeAndPackPage = ({ mode }) => {
     let uiCompleteTime = "-";
     if (newValue === 1) {
       const now = new Date();
-      uiCompleteDate = now.toLocaleDateString("ko-KR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }).replace(/\.\s*/g, "/").replace(/\/$/, "");
+      uiCompleteDate = now
+        .toLocaleDateString("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .replace(/\.\s*/g, "/")
+        .replace(/\/$/, "");
       uiCompleteTime = now.toLocaleTimeString("ko-KR", {
         hour: "2-digit",
         minute: "2-digit",
@@ -105,9 +96,8 @@ const MakeAndPackPage = ({ mode }) => {
     }
 
     try {
-      // ✅ mode값 그대로 사용
       const res = await fetch(
-        `http://211.42.159.18:8080/api/members/${id}/complete/${currentMode}`,
+        `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -122,7 +112,7 @@ const MakeAndPackPage = ({ mode }) => {
       }
 
       console.log(
-        `✅ bool_complete${currentMode} 업데이트 성공 (id=${id}, mode=${currentMode}, newValue=${newValue})`
+        `✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`
       );
 
       if (typeof setMembers !== "function") {
@@ -131,26 +121,18 @@ const MakeAndPackPage = ({ mode }) => {
       }
 
       // ✅ 상태 즉시 업데이트
-      setMembers((prev) => {
-        if (!Array.isArray(prev)) {
-          console.error("❌ prev가 배열이 아님:", prev);
-          return prev;
-        }
-
-        const updated = prev.map((m) => {
-          if (Number(m.id) === Number(id)) {
-            return {
-              ...m,
-              [`bool_complete${currentMode}`]: newValue,
-              completeDate: uiCompleteDate,
-              completeTime: uiCompleteTime,
-            };
-          }
-          return m;
-        });
-
-        return updated;
-      });
+      setMembers((prev) =>
+        prev.map((m) =>
+          Number(m.id) === Number(id)
+            ? {
+                ...m,
+                [`bool_complete${step}`]: newValue,
+                completeDate: uiCompleteDate,
+                completeTime: uiCompleteTime,
+              }
+            : m
+        )
+      );
     } catch (err) {
       console.error("❌ 네트워크/로직 오류:", err);
     }
@@ -161,15 +143,15 @@ const MakeAndPackPage = ({ mode }) => {
   return (
     <div>
       <h2 style={{ textAlign: "center", margin: "20px 0", fontSize: "24px" }}>
-        Make and Pack {mode}
+        Make and Pack 1
       </h2>
       <FlightTable
         data={mappedMembers}
         toggleBoolComplete={toggleBoolComplete}
-        mode={mode}  // ✅ FlightTable에도 mode 전달
+        // ✅ mode 필요 없음 (페이지별 고정이니까)
       />
     </div>
   );
 };
 
-export default MakeAndPackPage;
+export default MakeAndPack1;
