@@ -58,8 +58,7 @@ const MakeAndPack2 = () => {
       departureTime: item.departuretime ?? "-",
       startTime,
       endTime,
-      // ✅ makeandpack2는 bool_complete2 사용
-      bool_complete2: item.bool_complete2 ?? 0,
+      bool_complete2: item.bool_complete2 ?? 0, // ✅ 고정
       completeDate: item.completeDate ?? "-",
       completeTime: item.completeTime ?? "-",
     };
@@ -67,7 +66,7 @@ const MakeAndPack2 = () => {
 
   const mappedMembers = members.map(mapToFlightTableData);
 
-  // ✅ 완료 체크 토글 → step=2로 고정
+  // ✅ 완료 체크 토글 → step=2 고정
   const toggleBoolComplete = async (id, step = 2, currentValue) => {
     const newValue = currentValue === 1 ? 0 : 1;
 
@@ -150,7 +149,7 @@ const MakeAndPack2 = () => {
       <FlightTable
         data={mappedMembers}
         toggleBoolComplete={toggleBoolComplete}
-        mode={2} // ✅ FlightTable에 mode=2 전달
+        // ✅ mode 제거 (페이지별 고정이니까 필요없음)
       />
     </div>
   );
