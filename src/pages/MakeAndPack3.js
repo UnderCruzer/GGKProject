@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import FlightTable from "../components/FlightTable";
 import { useMembers } from "../context/MembersContext";
 
@@ -13,7 +13,6 @@ const calcTime = (baseDate, timeStr, offsetHours) => {
   dateObj.setMinutes(minutes);
   dateObj.setSeconds(seconds || 0);
 
-  // offsetHours만큼 더하거나 빼기
   dateObj.setHours(dateObj.getHours() + offsetHours);
   return dateObj;
 };
@@ -30,10 +29,9 @@ const formatTime = (dateObj) => {
 const MakeAndPack3 = () => {
   const { members, setMembers, loading } = useMembers();
 
-    console.log("DEBUG >> useMembers() in MakeAndPack1:", {
+  console.log("DEBUG >> useMembers() in MakeAndPack3:", {
     membersType: typeof members,
     setMembersType: typeof setMembers,
-    setMembersValue: setMembers,
     membersLength: members?.length,
     loading,
   });
@@ -62,30 +60,33 @@ const MakeAndPack3 = () => {
       aircraft: item.acversion ?? "-",
       departureDate: item.departuredate ?? "-",
       departureTime: item.departuretime ?? "-",
-      startTime: startTime,   // ✅ 출발 -6h
-      endTime: endTime,       // ✅ 작업시작 +2h
-      bool_complete1: item.bool_complete1 ?? 0,
+      startTime,
+      endTime,
+      // ✅ makeandpack3는 bool_complete3 사용
+      bool_complete3: item.bool_complete3 ?? 0,
       completeDate: item.completeDate ?? "-",
-      completeTime: item.completeTime ?? "-"
+      completeTime: item.completeTime ?? "-",
     };
   };
 
   const mappedMembers = members.map(mapToFlightTableData);
 
-  // ✅ 완료 체크 토글 (백엔드에는 bool만 전송)
-  const toggleBoolComplete = async (id, step, currentValue) => {
+  // ✅ 완료 체크 토글 → step=3로 고정
+  const toggleBoolComplete = async (id, step = 3, currentValue) => {
     const newValue = currentValue === 1 ? 0 : 1;
 
-    // UI에만 표시할 완료일자/시간
     let uiCompleteDate = "-";
     let uiCompleteTime = "-";
     if (newValue === 1) {
       const now = new Date();
-      uiCompleteDate = now.toLocaleDateString("ko-KR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }).replace(/\.\s*/g, "/").replace(/\/$/, "");
+      uiCompleteDate = now
+        .toLocaleDateString("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .replace(/\.\s*/g, "/")
+        .replace(/\/$/, "");
       uiCompleteTime = now.toLocaleTimeString("ko-KR", {
         hour: "2-digit",
         minute: "2-digit",
@@ -109,14 +110,15 @@ const MakeAndPack3 = () => {
         return;
       }
 
-      console.log(`✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`);
+      console.log(
+        `✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`
+      );
 
-      if (typeof setMembers !== 'function') {
+      if (typeof setMembers !== "function") {
         console.error("❌ CRITICAL: setMembers is not a function.");
         return;
       }
 
-      // ⭐️ [수정] 상태를 즉시 업데이트하도록 수정
       setMembers((prev) => {
         if (!Array.isArray(prev)) {
           console.error("❌ prev가 배열이 아님:", prev);
@@ -149,7 +151,11 @@ const MakeAndPack3 = () => {
       <h2 style={{ textAlign: "center", margin: "20px 0", fontSize: "24px" }}>
         Make and Pack 3
       </h2>
-      <FlightTable data={mappedMembers} toggleBoolComplete={toggleBoolComplete} />
+      <FlightTable
+        data={mappedMembers}
+        toggleBoolComplete={toggleBoolComplete}
+        mode={3}  // ✅ FlightTable에 mode=3 전달
+      />
     </div>
   );
 };
