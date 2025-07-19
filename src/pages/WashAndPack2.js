@@ -46,6 +46,7 @@ const mapToFlightTableData = (item) => {
   return {
     id: item.id ?? "-",
     flight: item.flightNumber ?? "-",         // 편명
+    airline : item.airline ?? "-",             // 항공사구분
     destination: item.destination ?? "-",     // 목적지
     aircraft: item.acversion ?? "-",          // 기종
     regNumber: item.ac_Reg ?? "-",            // 레그넘버

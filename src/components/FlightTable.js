@@ -114,6 +114,7 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = fa
             <tr>
               <th>ID</th>
               <th>비행편명</th>
+              {washOnly && <th>항공사구분</th>}
               <th>목적지</th>
               <th>기종</th>
               {washOnly && <th>레그넘버</th>}
@@ -139,6 +140,7 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = fa
               <tr key={f.id}>
                 <td>{f.id}</td>
                 <td>{renderCell("flight", f.flight)}</td>
+                {washOnly && ( <td data-label="항공사구분" className="center-align"> {f.airline} </td> )} 
                 <td>{renderCell("destination", f.destination)}</td>
                 <td>{renderCell("aircraft", f.aircraft)}</td>
                 {washOnly && ( <td data-label="레그넘버" className="center-align"> {f.regNumber} </td> )} 
