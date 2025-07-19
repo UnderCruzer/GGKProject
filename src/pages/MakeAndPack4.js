@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 import FlightTable from '../components/FlightTable';
 
 export const makeAndPack4Data = [
@@ -101,4 +101,4 @@ const MakeAndPack4 = () => (
     </div>
 );
 
-export default MakeAndPack4;
+export default MakeAndPack4;*/

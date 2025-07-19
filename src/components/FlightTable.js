@@ -29,9 +29,12 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = fa
   const [flightFilter, setFlightFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
   const [completedFilter, setCompletedFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("today");
 
   const uniqueFlights = [...new Set(data.map((f) => f.flight))];
   const uniqueDestinations = [...new Set(data.map((f) => f.destination))];
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const tomorrowStr = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
   const filteredData = data.filter(
     (f) =>
@@ -41,7 +44,10 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = fa
         ? f.bool_complete1 === 1
           ? "Y" === completedFilter
           : "N" === completedFilter
-        : true)
+        : true) &&
+        (dateFilter === "all"
+        ? true
+          : (f.departureDate?.slice(0, 10) === (dateFilter === "today" ? todayStr : tomorrowStr)))
   );
 
   return (
@@ -86,6 +92,18 @@ const FlightTable = ({ data, toggleBoolComplete, washOnly = false, makeOnly = fa
             <option value="">전체</option>
             <option value="Y">✅ 완료</option>
             <option value="N">❌ 미완료</option>
+          </select>
+        </label>
+
+        <label>
+          날짜 :
+          <select
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+          >
+            <option value="today">오늘</option>
+            <option value="tomorrow">내일</option>
+            <option value="all">전체</option>
           </select>
         </label>
       </div>
