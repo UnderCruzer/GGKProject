@@ -1,100 +1,99 @@
 import React, { useEffect, useState } from "react";
 import FlightTable from "../components/FlightTable";
 
-// ✅ 안전한 시간 계산
-const calcTime = (baseDate, timeStr, offsetHours) => {
-  if (!timeStr) return null;
-  const [hours, minutes, seconds] = timeStr.split(":").map(Number);
-  if (isNaN(hours) || isNaN(minutes)) return null;
-
-  const dateObj = new Date(baseDate);
-  dateObj.setHours(hours);
-  dateObj.setMinutes(minutes);
-  dateObj.setSeconds(seconds || 0);
-
-  dateObj.setHours(dateObj.getHours() + offsetHours);
-  return dateObj;
-};
-
-// ✅ Date → HH:mm
-const formatTime = (dateObj) => {
-  if (!dateObj) return "-";
-  const h = String(dateObj.getHours()).padStart(2, "0");
-  const m = String(dateObj.getMinutes()).padStart(2, "0");
-  return `${h}:${m}`;
-};
-
-// ✅ DB → FlightTable 매핑
-const mapToFlightTableData = (item) => {
-  const baseDate = new Date(item.departuredate ?? "1970-01-01");
-  const arrivalTime = item.arrivaltime ?? null;
-
-  const startTimeObj = calcTime(baseDate, arrivalTime, -8);
-  const startTime = formatTime(startTimeObj);
-
-  let endTime = "-";
-  if (startTimeObj) {
-    const endTimeObj = new Date(startTimeObj);
-    endTimeObj.setHours(endTimeObj.getHours() + 2);
-    endTime = formatTime(endTimeObj);
-  }
-
-  // ✅ 완료 여부
-  const isCompleted =
-    Number(item.bool_complete6) === 1;
-
-  return {
-    id: item.id ?? "-",
-    flight: item.flightNumber ?? "-",         // 편명
-    destination: item.destination ?? "-",     // 목적지
-    aircraft: item.acversion ?? "-",          // 기종
-    departureDate: item.departuredate ?? "-", // 출발날짜
-    departureTime: arrivalTime ?? "-",        // 출발시간
-    startTime: startTime,                     // 출발 -8시간
-    prepDays: -1,                             // 준비시간 고정
-    endTime: endTime,                         // 작업시작 +2시간
-    completed: isCompleted ? "Y" : "N",       // ✅ 하나라도 1이면 Y
-    note: "",
-    completeDate: "",
-    completeTime: ""
-  };
-};
+const calcTime = (baseDate, timeStr, offsetHours) => { /* 동일 */ };
+const formatTime = (dateObj) => { /* 동일 */ };
 
 const PickAndPack2 = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const mapToFlightTableData = (item) => {
+    const baseDate = new Date(item.departuredate ?? "1970-01-01");
+    const arrivalTime = item.arrivaltime ?? null;
+    const startTimeObj = calcTime(baseDate, arrivalTime, -8);
+    const startTime = formatTime(startTimeObj);
+
+    let endTime = "-";
+    if (startTimeObj) {
+      const endTimeObj = new Date(startTimeObj);
+      endTimeObj.setHours(endTimeObj.getHours() + 2);
+      endTime = formatTime(endTimeObj);
+    }
+
+    return {
+      id: item.id ?? "-",
+      flight: item.flightNumber ?? "-",
+      destination: item.destination ?? "-",
+      aircraft: item.acversion ?? "-",
+      departureDate: item.departuredate ?? "-",
+      departureTime: arrivalTime ?? "-",
+      startTime,
+      prepDays: -1,
+      endTime,
+      bool_complete6: item.bool_complete6 ?? 0, // ✅ PickAndPack2 전용
+      completeDate: item.completeDate ?? "-",
+      completeTime: item.completeTime ?? "-",
+    };
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch("http://211.42.159.18:8080/api/members");
         const json = await res.json();
-
-        console.log("✅ API 응답:", json);
-
-        const mapped = json.map((item) => mapToFlightTableData(item));
-
-        console.log("✅ 변환된 데이터:", mapped);
-
-        setData(mapped);
+        setData(json.map(mapToFlightTableData));
       } catch (err) {
         console.error("❌ 데이터 불러오기 실패:", err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
+
+  const toggleBoolComplete = async (id, step = 6, currentValue) => {
+    const newValue = currentValue === 1 ? 0 : 1;
+    let uiCompleteDate = "-", uiCompleteTime = "-";
+    if (newValue === 1) {
+      const now = new Date();
+      uiCompleteDate = now.toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\.\s*/g, "/").replace(/\/$/, "");
+      uiCompleteTime = now.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
+    }
+
+    try {
+      const res = await fetch(`http://211.42.159.18:8080/api/members/${id}/complete/${step}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: newValue }),
+      });
+      if (!res.ok) {
+        console.error("❌ API 응답 오류:", await res.text());
+        return;
+      }
+
+      console.log(`✅ bool_complete${step} 업데이트 성공`);
+
+      setData((prev) =>
+        prev.map((m) =>
+          Number(m.id) === Number(id)
+            ? { ...m, [`bool_complete${step}`]: newValue, completeDate: uiCompleteDate, completeTime: uiCompleteTime }
+            : m
+        )
+      );
+    } catch (err) {
+      console.error("❌ 네트워크/로직 오류:", err);
+    }
+  };
 
   if (loading) return <div>데이터 불러오는 중...</div>;
 
   return (
     <div>
-      <h2 style={{ textAlign: "center", marginTop: "20px", marginBottom: "30px", fontSize: "24px" }}>
-        Pick and Pack 2 (DB 실시간)
+      <h2 style={{ textAlign: "center", margin: "20px 0", fontSize: "24px" }}>
+        Pick and Pack 2
       </h2>
-      <FlightTable data={data} />
+      <FlightTable data={data} toggleBoolComplete={toggleBoolComplete} />
     </div>
   );
 };
