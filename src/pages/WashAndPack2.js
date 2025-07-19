@@ -48,7 +48,7 @@ const mapToFlightTableData = (item) => {
     flight: item.flightNumber ?? "-",         // 편명
     destination: item.destination ?? "-",     // 목적지
     aircraft: item.acversion ?? "-",          // 기종
-    regNumber: item.ac_reg ?? "-",            // 레그넘버 
+    regNumber: item.ac_reg ?? "-",            // 레그넘버
     departureDate: item.departuredate ?? "-", // 출발날짜
     departureTime: arrivalTime ?? "-",        // 출발시간
     startTime: startTime,                     // 출발 -8시간
@@ -61,7 +61,7 @@ const mapToFlightTableData = (item) => {
   };
 };
 
-const WashAndPack1 = () => {
+const WashAndPack2 = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -93,11 +93,11 @@ const WashAndPack1 = () => {
   return (
     <div>
       <h2 style={{ textAlign: "center", marginTop: "20px", marginBottom: "30px", fontSize: "24px" }}>
-        Wash and Pack 1 (DB 실시간)
+        Wash and Pack 2 (DB 실시간)
       </h2>
-      <FlightTable data={data} makeOnly={true}/>
+      <FlightTable data={data} washOnly={true} makeOnly={true} />
     </div>
   );
 };
 
-export default WashAndPack1;
+export default WashAndPack2;
