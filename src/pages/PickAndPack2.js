@@ -17,7 +17,7 @@ const calcTime = (baseDate, timeStr, offsetHours) => {
   return dateObj;
 };
 
-// ✅ Date → HH:mm
+// ✅ Date → HH:mm:ss 포맷
 const formatTime = (dateObj) => {
   if (!dateObj) return "-";
   const h = String(dateObj.getHours()).padStart(2, "0");
