@@ -173,7 +173,7 @@ const FlightTable = ({
               <tr key={f.id}>
                 <td>{f.id}</td>
                 <td>{renderCell("flight", f.flight)}</td>
-                {washOnly && <td>{f.airline}</td>}
+                {washOnly && <td>{f.flight?.startsWith("OZ") ? "OZ" : "OAL"}</td>}
                 <td>{renderCell("destination", f.destination)}</td>
                 <td>{renderCell("aircraft", f.aircraft)}</td>
                 {washOnly && <td>{f.regNumber}</td>}
