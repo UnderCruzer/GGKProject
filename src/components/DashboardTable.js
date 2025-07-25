@@ -5,6 +5,7 @@ const DashboardTable = ({ data }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [dateFilter, setDateFilter] = useState("today");
 
   // ✅ 작업 키 정의
   const completeKeys = [
@@ -17,6 +18,20 @@ const DashboardTable = ({ data }) => {
     'bool_complete8'
   ];
 
+  const getLocalDateStr = (dateObj) => {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  const todayStr = getLocalDateStr(today);
+  const tomorrowStr = getLocalDateStr(tomorrow);
+  
   // ✅ 사용자에게 보여줄 라벨 매핑
   const completeKeyLabels = {
     bool_complete1: "MNP1",
@@ -50,8 +65,16 @@ const DashboardTable = ({ data }) => {
         statusFilter === 'all' ||
         (statusFilter === '완료' && status === '완료') ||
         (statusFilter === '미완료' && status === '미완료');
+      
+      const depDate = item.departuredate?.slice(0, 10) ?? "";
+      const matchDate =
+        dateFilter === "all"
+          ? true
+          : dateFilter === "today"
+          ? depDate === todayStr
+          : depDate === tomorrowStr;
 
-      return flightMatch && statusMatch;
+      return flightMatch && statusMatch && matchDate;
     })
     .sort((a, b) => {
       if (!sortConfig.key) return 0;
@@ -78,6 +101,11 @@ const DashboardTable = ({ data }) => {
           <option value="all">전체</option>
           <option value="완료">완료</option>
           <option value="미완료">미완료</option>
+        </select>
+        <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
+          <option value="all">전체</option>
+          <option value="today">오늘</option>
+          <option value="tomorrow">내일</option>
         </select>
       </div>
 
