@@ -146,6 +146,7 @@ const PickAndPack2 = () => {
       <FlightTable
         data={data}
         toggleBoolComplete={toggleBoolComplete}
+        hideNote={true}
       />
     </div>
   );
