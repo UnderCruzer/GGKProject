@@ -145,6 +145,8 @@ const WashAndPack1 = () => {
         data={data}
         toggleBoolComplete={toggleBoolComplete}
         washOnly={true}  // ✅ Wash 전용 UI 표시
+        extraFields={[{ key: "workerSign", label: "작업자 서명" }]}
+        //작업자 서명
       />
     </div>
   );
