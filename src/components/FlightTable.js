@@ -38,20 +38,20 @@ const renderCell = (key, value) => {
   return <input type="text" defaultValue={value} />;
 };
 
-// ✅ 완료 버튼 (comment도 같이 넘겨줄 수 있게 변경)
-const CompleteToggleButton = ({ flight, toggleBoolComplete, latestComment }) => {
+// ✅ 완료 버튼 (comment와 extraFields까지 넘길 수 있게 변경)
+const CompleteToggleButton = ({ flight, toggleBoolComplete, latestComment, extraValues }) => {
   const completeField = Object.keys(flight).find((k) => k.startsWith("bool_complete"));
   const isCompleted = flight[completeField] === 1;
   const currentValue = flight[completeField] ?? 0;
 
   const handleToggle = () => {
-    toggleBoolComplete(flight.id, undefined, currentValue, latestComment);
+    toggleBoolComplete(flight.id, undefined, currentValue, latestComment, extraValues);
   };
 
   return <input type="checkbox" checked={isCompleted} onChange={handleToggle} />;
 };
 
-// ✅ 주석 입력칸 (완료되면 readOnly)
+// ✅ 주석/서명 입력칸 (완료되면 readOnly)
 const EditableNoteCell = ({ value, onChange, disabled }) => {
   return (
     <input
@@ -73,16 +73,18 @@ const FlightTable = ({
   toggleBoolComplete,
   washOnly = false,
   makeOnly = false,
+  hideNote = false,        // ✅ PickAndPack에서 주석 숨김용
+  extraFields = []         // ✅ WashAndPack 전용 추가필드 [{key:"workerSign", label:"작업자 서명"}, ...]
 }) => {
   const [flightFilter, setFlightFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
   const [completedFilter, setCompletedFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("today");
 
-  // ✅ 주석 상태 추가
+  // ✅ 주석/추가필드 상태
   const [comments, setComments] = useState({});
-  const handleCommentChange = (id, newComment) => {
-    setComments((prev) => ({ ...prev, [id]: newComment }));
+  const handleCommentChange = (id, newValue) => {
+    setComments((prev) => ({ ...prev, [id]: newValue }));
   };
 
   const uniqueFlights = useMemo(() => [...new Set(data.map((f) => f.flight))], [data]);
@@ -185,7 +187,11 @@ const FlightTable = ({
               {makeOnly && <th className="col-cart-linnen">카트 LINNEN</th>}
               {makeOnly && <th className="col-cart-set">카트 S/T SET</th>}
               <th className="col-completed">완료</th>
-              <th className="col-note">주석</th>
+              {!hideNote && <th className="col-note">주석</th>}
+              {/* ✅ extraFields 헤더 */}
+              {extraFields.map((field) => (
+                <th key={field.key} className={`col-${field.key}`}>{field.label}</th>
+              ))}
               <th className="col-completed-date">완료일자</th>
               <th className="col-completed-time">완료시간</th>
             </tr>
@@ -195,6 +201,13 @@ const FlightTable = ({
               const completeField = Object.keys(f).find((k) => k.startsWith("bool_complete"));
               const isCompleted = f[completeField] === 1;
               const currentComment = comments[f.id] ?? f.comment ?? "";
+
+              // ✅ extraFields 값 초기화
+              const extraValues = {};
+              extraFields.forEach((field) => {
+                extraValues[field.key] =
+                  comments[`${f.id}_${field.key}`] ?? f[field.key] ?? "";
+              });
 
               return (
                 <tr key={f.id}>
@@ -226,16 +239,32 @@ const FlightTable = ({
                       flight={f}
                       toggleBoolComplete={toggleBoolComplete}
                       latestComment={currentComment}
+                      extraValues={extraValues} // ✅ 추가필드 값 전달
                     />
                   </td>
 
-                  <td className="col-note" data-label="주석">
-                    <EditableNoteCell
-                      value={currentComment}
-                      onChange={(val) => handleCommentChange(f.id, val)}
-                      disabled={isCompleted}
-                    />
-                  </td>
+                  {!hideNote && (
+                    <td className="col-note" data-label="주석">
+                      <EditableNoteCell
+                        value={currentComment}
+                        onChange={(val) => handleCommentChange(f.id, val)}
+                        disabled={isCompleted}
+                      />
+                    </td>
+                  )}
+
+                  {/* ✅ extraFields 컬럼 */}
+                  {extraFields.map((field) => (
+                    <td key={field.key} className={`col-${field.key}`}>
+                      <EditableNoteCell
+                        value={extraValues[field.key]}
+                        onChange={(val) =>
+                          handleCommentChange(`${f.id}_${field.key}`, val)
+                        }
+                        disabled={isCompleted}
+                      />
+                    </td>
+                  ))}
 
                   <td className="col-completed-date" data-label="완료일자">{f.completeDate ?? "-"}</td>
                   <td className="col-completed-time" data-label="완료시간">{formatTimeHHMM(f.completeTime)}</td>
