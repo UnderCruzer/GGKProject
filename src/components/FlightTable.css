@@ -159,4 +159,21 @@
     text-align: left;
     font-weight: bold;
   }
+
+  .flight-table .center-align {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .flight-table .center-align::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    width: calc(50% - 20px);
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+  }
 }
