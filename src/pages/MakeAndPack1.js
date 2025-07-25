@@ -63,6 +63,7 @@ const MakeAndPack1 = () => {
       startTime,
       endTime,
       bool_complete1: item.bool_complete1 ?? 0, // ✅ 고정
+      comment: item.comment ?? "",              // ✅ 주석 필드 추가
       completeDate: item.completeDate ?? "-",
       completeTime: item.completeTime ?? "-",
     };
@@ -70,8 +71,8 @@ const MakeAndPack1 = () => {
 
   const mappedMembers = members.map(mapToFlightTableData);
 
-  // ✅ 완료 체크 토글 (step=1 고정)
-  const toggleBoolComplete = async (id, step = 1, currentValue) => {
+  // ✅ 완료 체크 토글 (step=1 고정) + comment 업데이트 지원
+  const toggleBoolComplete = async (id, step = 1, currentValue, comment = "") => {
     const newValue = currentValue === 1 ? 0 : 1;
 
     // UI에만 표시할 완료일자/시간
@@ -100,7 +101,10 @@ const MakeAndPack1 = () => {
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ value: newValue }),
+          body: JSON.stringify({ 
+            value: newValue,
+            comment: comment || ""  // ✅ 주석도 같이 업데이트
+          }),
         }
       );
 
@@ -111,7 +115,7 @@ const MakeAndPack1 = () => {
       }
 
       console.log(
-        `✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`
+        `✅ bool_complete${step} + comment 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue}, comment=${comment})`
       );
 
       if (typeof setMembers !== "function") {
@@ -126,6 +130,7 @@ const MakeAndPack1 = () => {
             ? {
                 ...m,
                 [`bool_complete${step}`]: newValue,
+                comment: comment, // ✅ 주석도 UI 반영
                 completeDate: uiCompleteDate,
                 completeTime: uiCompleteTime,
               }
@@ -147,7 +152,6 @@ const MakeAndPack1 = () => {
       <FlightTable
         data={mappedMembers}
         toggleBoolComplete={toggleBoolComplete}
-        // ✅ mode 필요 없음 (페이지별 고정이니까)
       />
     </div>
   );
