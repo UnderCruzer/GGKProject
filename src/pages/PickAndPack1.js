@@ -71,7 +71,7 @@
         destination: item.destination ?? "-",
         aircraft: item.acversion ?? "-",
         departureDate: item.departuredate ?? "-",
-        departureTime: extractTime(item.departureTime) ?? "-",
+        departureTime: extractTime(item.departuretime) ?? "-",
         startTime,
         prepDays: -1,
         endTime,
