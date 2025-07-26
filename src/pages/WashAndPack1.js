@@ -54,7 +54,7 @@ const WashAndPack1 = () => {
     const rawDepartureTime = item.departuretime ?? null;
     const departureTime = extractTime(rawDepartureTime);
     
-    const startTimeObj = calcTime(baseDate, departureTime, -8);
+    const startTimeObj = calcTime(baseDate, departureTime, -6);
     const startTime = formatTime(startTimeObj);
 
     let endTime = "-";
@@ -72,7 +72,7 @@ const WashAndPack1 = () => {
       aircraft: item.acversion ?? "-",
       regNumber: item.ac_Reg ?? "-",            // ✅ 레그넘버
       departureDate: item.departuredate ?? "-",
-      departureTime: extractTime(item.departureTime) ?? "-",
+      departureTime: extractTime(item.departuretime) ?? "-",
       startTime,
       prepDays: -1,
       endTime,
