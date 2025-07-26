@@ -36,10 +36,19 @@ const MakeAndPack1 = () => {
     loading,
   });
 
+  const extractTime = (timeStr) => {
+      if (!timeStr) return null;
+      const parts = timeStr.split(":");
+      if (parts.length < 2) return null;
+      return `${parts[0].padStart(2,"0")}:${parts[1].padStart(2,"0")}`;
+    };
+  
   // ✅ 백엔드 데이터 → 화면 표시용 데이터 변환
   const mapToFlightTableData = (item) => {
     const baseDate = new Date(item.departuredate ?? "1970-01-01");
-    const departureTime = item.departuretime ?? null;
+
+    const rawDepartureTime = item.departuretime ?? null;
+    const departureTime = extractTime(rawDepartureTime);
 
     // ✅ 작업시작 = 출발시간 - 6시간
     const startTimeObj = calcTime(baseDate, departureTime, -6);
@@ -59,13 +68,13 @@ const MakeAndPack1 = () => {
       destination: item.destination ?? "-",
       aircraft: item.acversion ?? "-",
       departureDate: item.departuredate ?? "-",
-      departureTime: item.departuretime ?? "-",
+      departureTime: extractTime(item.departuretime) ?? "-",
       startTime,
       endTime,
       bool_complete1: item.bool_complete1 ?? 0, // ✅ 고정
       comment: item.comment ?? "",              // ✅ 주석 필드 추가
       completeDate: item.completeDate ?? "-",
-      completeTime: item.completeTime ?? "-",
+      completeTime: extractTime(item.completeTime) ?? "-",
     };
   };
 
