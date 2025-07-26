@@ -86,7 +86,7 @@ const MakeAndPack1 = () => {
       startTime,
       endTime,
       bool_complete1: item.bool_complete1 ?? 0, // ✅ 고정
-      comment: item.comment ?? "",              // ✅ 주석 필드 추가
+      comment: item.comment1 ?? "",              // ✅ 주석 필드 추가
       completeDate: item.completeDate ?? "-",
       completeTime: extractTime(item.completeTime) ?? "-",
     };
