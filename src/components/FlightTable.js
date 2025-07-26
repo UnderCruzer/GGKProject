@@ -38,14 +38,15 @@ const renderCell = (key, value) => {
   return <input type="text" defaultValue={value} />;
 };
 
-// ✅ 완료 버튼 (comment와 extraFields까지 넘길 수 있게 변경)
-const CompleteToggleButton = ({ flight, toggleBoolComplete, latestComment, extraValues }) => {
+// ✅ 완료 버튼 (getLatestComment 함수로 최신 주석 읽기)
+const CompleteToggleButton = ({ flight, toggleBoolComplete, getLatestComment, extraValues }) => {
   const completeField = Object.keys(flight).find((k) => k.startsWith("bool_complete"));
   const isCompleted = flight[completeField] === 1;
   const currentValue = flight[completeField] ?? 0;
 
   const handleToggle = () => {
-    toggleBoolComplete(flight.id, undefined, currentValue, latestComment, extraValues);
+    const commentToSave = getLatestComment(); // ✅ 클릭 순간 최신 주석값 읽기
+    toggleBoolComplete(flight.id, undefined, currentValue, commentToSave, extraValues);
   };
 
   return <input type="checkbox" checked={isCompleted} onChange={handleToggle} />;
@@ -73,8 +74,8 @@ const FlightTable = ({
   toggleBoolComplete,
   washOnly = false,
   makeOnly = false,
-  hideNote = false,        // ✅ PickAndPack에서 주석 숨김용
-  extraFields = []         // ✅ WashAndPack 전용 추가필드 [{key:"workerSign", label:"작업자 서명"}, ...]
+  hideNote = false,
+  extraFields = []
 }) => {
   const [flightFilter, setFlightFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
@@ -237,8 +238,8 @@ const FlightTable = ({
                   <td className="col-completed" data-label="완료">
                     <CompleteToggleButton
                       flight={f}
+                      getLatestComment={() => comments[f.id] ?? f.comment ?? ""} // ✅ 최신 주석 상태 읽기
                       toggleBoolComplete={toggleBoolComplete}
-                      latestComment={currentComment}
                       extraValues={extraValues} // ✅ 추가필드 값 전달
                     />
                   </td>
