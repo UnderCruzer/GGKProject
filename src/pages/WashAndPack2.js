@@ -54,7 +54,7 @@ const WashAndPack2 = () => {
     const rawDepartureTime = item.departuretime ?? null;
     const departureTime = extractTime(rawDepartureTime);
 
-    const startTimeObj = calcTime(baseDate, arrivalTime, -8);
+    const startTimeObj = calcTime(baseDate, departureTime, -6);
     const startTime = formatTime(startTimeObj);
 
     let endTime = "-";
