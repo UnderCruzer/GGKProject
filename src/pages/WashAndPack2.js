@@ -77,11 +77,12 @@ const WashAndPack2 = () => {
       prepDays: -1,
       endTime,
       bool_complete8: item.bool_complete8 ?? 0, // ✅ WashAndPack2 전용 완료 필드
-      cartmeal : item.cart_meal ?? "-",
-      carteq : item.cart_eq ?? "-",
-      cartglss : item.cart_glass ?? "-",
-      cartlinnen : item.cart_linen ?? "-",
-      cartset : item.cart_st ?? "-",
+      cart_meal : item.cart_meal ?? "-",
+      cart_eq : item.cart_eq ?? "-",
+      cart_glss : item.cart_glss ?? "-",
+      ey_cart : item.ey_cart ?? "-",
+      cart_linnen : item.cart_linnen ?? "-",
+      cart_st : item.cart_st ?? "-",
       comment: item.comment8 ?? "",
       workersign2: item.sign_wkr2 ?? "",       // ✅ 작업자 서명
       checkersign: item.sign_sprv ?? "", // ✅ 확인자 서명
@@ -128,9 +129,9 @@ const WashAndPack2 = () => {
       cart_meal: extraValues.cart_meal,
       cart_eq: extraValues.cart_eq,
       cart_glss: extraValues.cart_glss,
-      cart_ey: extraValues.cart_ey,
+      ey_cart: extraValues.ey_cart,
       cart_linnen: extraValues.cart_linnen,
-      cart_stset: extraValues.cart_stset,
+      cart_st: extraValues.cart_st,
     };
 
     const res = await fetch(`http://211.42.159.18:8080/api/members/${id}/complete/${step}`, {
@@ -176,7 +177,10 @@ const WashAndPack2 = () => {
         toggleBoolComplete={toggleBoolComplete}
         washOnly={true}   // ✅ Wash 전용 UI
         makeOnly={true}   // ✅ 추가 UI가 필요하면 유지
-        extraFields={[{ key: "workersign2", label: "작업자 서명" },  { key: "checkersign", label: "확인자 서명" }]}
+        extraFields={[{ key: "workersign2", label: "작업자 서명" },  { key: "checkersign", label: "확인자 서명" }
+          ,{ key: "cart_meal", label: "카트 MEAL" }, { key: "cart_eq", label: "카트 EQ" }, { key: "cart_glss", label: "카트 GLSS" },{ key: "ey_cart", label: "카트 EY" },
+          { key: "cart_linnen", label: "카트 LINNEN" }, { key: "cart_st", label: "카트 S/T SET" }
+          ]}
         // 작업자 서명
         // 확인자 서명
       />
