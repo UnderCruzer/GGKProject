@@ -80,7 +80,7 @@ const WashAndPack2 = () => {
       cart_meal : item.cart_meal ?? "-",
       cart_eq : item.cart_eq ?? "-",
       cart_glss : item.cart_glss ?? "-",
-      ey_cart : item.ey_cart ?? "-",
+      ey_cart : item.ey_Cart ?? "-",
       cart_linnen : item.cart_linnen ?? "-",
       cart_st : item.cart_st ?? "-",
       comment: item.comment8 ?? "",
@@ -178,8 +178,6 @@ const WashAndPack2 = () => {
         washOnly={true}   // ✅ Wash 전용 UI
         makeOnly={true}   // ✅ 추가 UI가 필요하면 유지
         extraFields={[{ key: "workersign2", label: "작업자 서명" },  { key: "checkersign", label: "확인자 서명" }
-          ,{ key: "cart_meal", label: "카트 MEAL" }, { key: "cart_eq", label: "카트 EQ" }, { key: "cart_glss", label: "카트 GLSS" },{ key: "ey_cart", label: "카트 EY" },
-          { key: "cart_linnen", label: "카트 LINNEN" }, { key: "cart_st", label: "카트 S/T SET" }
           ]}
         // 작업자 서명
         // 확인자 서명
