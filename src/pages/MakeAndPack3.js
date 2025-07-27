@@ -85,8 +85,8 @@ const MakeAndPack3 = () => {
       departureTime: extractTime(item.departuretime) ?? "-",
       startTime,
       endTime,
-      bool_complete1: item.bool_complete3 ?? 0, // ✅ 고정
-      comment: item.comment2 ?? "",              // ✅ 주석 필드 추가
+      bool_complete3: item.bool_complete3 ?? 0, // ✅ 고정
+      comment: item.comment3 ?? "",              // ✅ 주석 필드 추가
       completeDate: item.completeDate ?? "-",
       completeTime: extractTime(item.completeTime) ?? "-",
     };
