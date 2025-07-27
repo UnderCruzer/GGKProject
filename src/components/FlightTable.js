@@ -264,7 +264,7 @@ const FlightTable = ({
                   </td>
                   <td className="col-cart-set">
                     <EditableNoteCell
-                      value={comments[`${f.id}_cart_st`] ?? f.cart_stt ?? ""}
+                      value={comments[`${f.id}_cart_st`] ?? f.cart_st ?? ""}
                       onChange={(val) => handleCommentChange(`${f.id}_cart_st`, val)}
                       disabled={isCompleted}
                     />

@@ -128,10 +128,10 @@ const WashAndPack1 = () => {
     const bodyData = {
       value: newValue,
       comment: latestComment,            // ✅ 주석 전송
-      sign_wkr1: extraValues.signworker1, // ✅ 작업자 서명 전송
+      sign_wkr1: extraValues.workerSign, // ✅ 작업자 서명 전송
     };
 
-    const res = await fetch(`http://211.42.159.18:8080/api/members/${id}/complete/${step}`, {
+    const res = await fetch(`http://211.42.159.18:8080/api/members/${id}/ complete/${step}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(bodyData),
@@ -151,7 +151,7 @@ const WashAndPack1 = () => {
               ...m,
               [`bool_complete${step}`]: newValue,
               comment: latestComment,
-              sign_wkr1: extraValues.signworker1,
+              signworker1: extraValues.workerSign,
               completeDate: uiCompleteDate,
               completeTime: uiCompleteTime,
             }
@@ -174,7 +174,7 @@ const WashAndPack1 = () => {
         data={data}
         toggleBoolComplete={toggleBoolComplete}
         washOnly={true}  // ✅ Wash 전용 UI 표시
-        extraFields={[{ key: "signworker1", label: "작업자 서명" }]}
+        extraFields={[{ key: "workerSign", label: "작업자 서명" }]}
         //작업자 서명
       />
     </div>
