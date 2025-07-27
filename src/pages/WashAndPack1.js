@@ -151,7 +151,7 @@ const WashAndPack1 = () => {
               ...m,
               [`bool_complete${step}`]: newValue,
               comment: latestComment,
-              signworker1: extraValues.workerSign,
+              sign_wkr1: extraValues.signworker1,
               completeDate: uiCompleteDate,
               completeTime: uiCompleteTime,
             }

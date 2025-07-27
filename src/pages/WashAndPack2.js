@@ -123,7 +123,7 @@ const WashAndPack2 = () => {
     const bodyData = {
       value: newValue,
       comment: latestComment,
-      sign_wkr2: extraValues.workerSign,
+      sign_wkr2: extraValues.signworker2,
       sign_sprv: extraValues.checkerSign,
       cart_meal: extraValues.cart_meal,
       cart_eq: extraValues.cart_eq,
@@ -176,7 +176,7 @@ const WashAndPack2 = () => {
         toggleBoolComplete={toggleBoolComplete}
         washOnly={true}   // ✅ Wash 전용 UI
         makeOnly={true}   // ✅ 추가 UI가 필요하면 유지
-        extraFields={[{ key: "workerSign", label: "작업자 서명" },  { key: "checkerSign", label: "확인자 서명" }]}
+        extraFields={[{ key: "signworker2", label: "작업자 서명" },  { key: "checkerSign", label: "확인자 서명" }]}
         // 작업자 서명
         // 확인자 서명
       />
