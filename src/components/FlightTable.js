@@ -285,8 +285,8 @@ const FlightTable = ({
                       />
                     </td>
                   ))}
-
-                  <td className="col-completed-date">{f.completeDate ?? "-"}</td>
+                    <td className="col-workerSign" data-label="작업자 서명">{f.completeDate ?? "-"}</td>
+                    <td className="col-completed-date">{f.completeDate ?? "-"}</td>
                   <td className="col-completed-time">{formatTimeHHMM(f.completeTime)}</td>
                 </tr>
               );
