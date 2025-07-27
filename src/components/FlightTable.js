@@ -207,6 +207,15 @@ const FlightTable = ({
                   comments[`${f.id}_${field.key}`] ?? f[field.key] ?? "";
               });
 
+              if (makeOnly) {
+                extraValues.cart_meal = comments[`${f.id}_cart_meal`] ?? f.cart_meal ?? "";
+                extraValues.cart_eq = comments[`${f.id}_cart_eq`] ?? f.cart_eq ?? "";
+                extraValues.cart_glss = comments[`${f.id}_cart_glss`] ?? f.cart_glss ?? "";
+                extraValues.ey_cart = comments[`${f.id}_ey_cart`] ?? f.ey_cart ?? "";
+                extraValues.cart_linnen = comments[`${f.id}_cart_linnen`] ?? f.cart_linnen ?? "";
+                extraValues.cart_st = comments[`${f.id}_cart_st`] ?? f.cart_st ?? "";
+              }
+
               return (
                 <tr key={f.id}>
                   <td className="col-id" data-label="ID">{f.id}</td>

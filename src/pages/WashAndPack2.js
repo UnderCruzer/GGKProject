@@ -126,12 +126,12 @@ const WashAndPack2 = () => {
       comment: latestComment,
       sign_wkr2: extraValues.workersign2,
       sign_sprv: extraValues.checkersign,
-      cart_meal: extraValues.cart_meal,
-      cart_eq: extraValues.cart_eq,
-      cart_glss: extraValues.cart_glss,
-      ey_cart: extraValues.ey_cart,
-      cart_linnen: extraValues.cart_linnen,
-      cart_st: extraValues.cart_st,
+      cart_meal: Number(extraValues.cart_meal) || 0,
+      cart_eq: Number(extraValues.cart_eq) || 0,
+      cart_glss: Number(extraValues.cart_glss) || 0,
+      ey_cart: Number(extraValues.ey_cart) || 0,
+      cart_linnen: Number(extraValues.cart_linnen) || 0,
+      cart_st: Number(extraValues.cart_st) || 0,
     };
 
     const res = await fetch(`http://211.42.159.18:8080/api/members/${id}/complete/${step}`, {
