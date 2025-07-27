@@ -76,6 +76,7 @@ const WashAndPack2 = () => {
       startTime,
       prepDays: -1,
       endTime,
+      comment: item.comment8 ?? "",
       bool_complete8: item.bool_complete8 ?? 0, // ✅ WashAndPack2 전용 완료 필드
       completeDate: item.completeDate ?? "-",
       completeTime: extractTime(item.completeTime) ?? "-",

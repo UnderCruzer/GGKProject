@@ -69,6 +69,7 @@ const CompleteToggleButton = ({ flight, toggleBoolComplete, getLatestComment, ex
   return <input type="checkbox" checked={isCompleted} onChange={handleToggle} />;
 };
 
+
 // ✅ 주석/서명 입력칸 (완료되면 readOnly)
 const EditableNoteCell = ({ value, onChange, disabled }) => {
   return (
@@ -242,52 +243,14 @@ const FlightTable = ({
                   <td className="col-start-time" data-label="작업시작">{renderCell("startTime", f.startTime)}</td>
                   <td className="col-prep-time" data-label="준비시간">{f.prepDays ?? -1}</td>
                   <td className="col-end-time" data-label="작업종료">{renderCell("endTime", f.endTime)}</td>
-                  {makeOnly && (
-                  </* 카트 관련 필드 */ >
-                  <td className="col-cart-meal">
+                  {makeOnly && cartKeys.map((key) => ( <td key={key} className={`col-${key}`}>
                     <EditableNoteCell
-                      value={comments[`${f.id}_cart_meal`] ?? f.cart_meal ?? ""}
-                      onChange={(val) => handleCommentChange(`${f.id}_cart_meal`, val)}
+                      value={comments[`${f.id}_${key}`] ?? f[key] ?? ""}
+                      onChange={(val) => handleCommentChange(`${f.id}_${key}`, val)}
                       disabled={isCompleted}
                     />
                   </td>
-                  <td className="col-cart-eq">
-                    <EditableNoteCell
-                      value={comments[`${f.id}_cart_eq`] ?? f.cart_eq ?? ""}
-                      onChange={(val) => handleCommentChange(`${f.id}_cart_eq`, val)}
-                      disabled={isCompleted}
-                    />              
-                  </td>
-                  <td className="col-cart-glss">
-                   <EditableNoteCell
-                     value={comments[`${f.id}_cart_glss`] ?? f.cart_glss ?? ""}
-                     onChange={(val) => handleCommentChange(`${f.id}_cart_glss`, val)}
-                     disabled={isCompleted}
-                  />
-                  </td>
-                  <td className="col-cart-ey">
-                    <EditableNoteCell
-                      value={comments[`${f.id}_ey_cart`] ?? f.ey_cart ?? ""}
-                      onChange={(val) => handleCommentChange(`${f.id}_ey_cart`, val)}
-                      disabled={isCompleted}
-                    />
-                  </td>
-                  <td className="col-cart-linnen">
-                  <EditableNoteCell
-                    value={comments[`${f.id}_cart_linnen`] ?? f.cart_linnen ?? ""}
-                    onChange={(val) => handleCommentChange(`${f.id}_cart_linnen`, val)}
-                    disabled={isCompleted}
-                  />
-                  </td>
-                  <td className="col-cart-set">
-                  <EditableNoteCell
-                    value={comments[`${f.id}_cart_st`] ?? f.cart_st ?? ""}
-                    onChange={(val) => handleCommentChange(`${f.id}_cart_st`, val)}
-                    disabled={isCompleted}
-                  />
-                  </td>
-                </>
-                  )}
+                  ))}
                 
 
                   {/* ✅ 완료 체크 + 최신 주석 저장 */}
@@ -296,10 +259,11 @@ const FlightTable = ({
                       flight={f}
                       getLatestComment={() => comments[f.id] ?? f.comment ?? ""}
                       toggleBoolComplete={toggleBoolComplete}
-                      extraValues={extraValues}
+                      extraValues={extraValues} 
                     />
                   </td>
 
+          
                   {!hideNote && (
                     <td className="col-note" data-label="주석">
                       <EditableNoteCell
@@ -321,8 +285,8 @@ const FlightTable = ({
                       />
                     </td>
                   ))}
-
-                  <td className="col-completed-date">{f.completeDate ?? "-"}</td>
+                    <td className="col-workerSign" data-label="작업자 서명">{f.completeDate ?? "-"}</td>
+                    <td className="col-completed-date">{f.completeDate ?? "-"}</td>
                   <td className="col-completed-time">{formatTimeHHMM(f.completeTime)}</td>
                 </tr>
               );
