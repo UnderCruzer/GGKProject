@@ -78,6 +78,14 @@ const WashAndPack2 = () => {
       endTime,
       comment: item.comment8 ?? "",
       bool_complete8: item.bool_complete8 ?? 0, // ✅ WashAndPack2 전용 완료 필드
+      cartmeal : item.cart_meal ?? "-",
+      carteq : item.cart_eq ?? "-",
+      cartglss : item.cart_glass ?? "-",
+      cartlinnen : item.cart_linen ?? "-",
+      cartset : item.cart_st ?? "-",
+      comment: item.comment8 ?? "",
+      workerSign2: item.sign_wkr2 ?? "",       // ✅ 작업자 서명
+      superviserSign: item.sign_sprv ?? "", // ✅ 확인자 서명
       completeDate: item.completeDate ?? "-",
       completeTime: extractTime(item.completeTime) ?? "-",
     };
