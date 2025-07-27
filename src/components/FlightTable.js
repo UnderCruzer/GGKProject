@@ -263,8 +263,7 @@ const FlightTable = ({
                     />
                   </td>
 
-                  /* 
-
+          
                   {!hideNote && (
                     <td className="col-note" data-label="주석">
                       <EditableNoteCell
