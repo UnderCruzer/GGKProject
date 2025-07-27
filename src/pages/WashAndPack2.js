@@ -107,65 +107,63 @@ const WashAndPack2 = () => {
   }, []);
 
   // ✅ 완료 체크 토글 → step=8 고정
-  const toggleBoolComplete = async (id, step = 8, currentValue) => {
-    const newValue = currentValue === 1 ? 0 : 1;
+ const toggleBoolComplete = async (id, step = 8, currentValue, latestComment = "", extraValues = {}) => {
+  const newValue = currentValue === 1 ? 0 : 1;
 
-    // ✅ UI 업데이트용 완료일자/시간
-    let uiCompleteDate = "-";
-    let uiCompleteTime = "-";
-    if (newValue === 1) {
-      const now = new Date();
-      uiCompleteDate = now
-        .toLocaleDateString("ko-KR", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        })
-        .replace(/\.\s*/g, "/")
-        .replace(/\/$/, "");
-      uiCompleteTime = now.toLocaleTimeString("ko-KR", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
+  let uiCompleteDate = "-";
+  let uiCompleteTime = "-";
+  if (newValue === 1) {
+    const now = new Date();
+    uiCompleteDate = now.toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" })
+                        .replace(/\.\s*/g, "/").replace(/\/$/, "");
+    uiCompleteTime = now.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
+  }
+
+  try {
+    const bodyData = {
+      value: newValue,
+      comment: latestComment,
+      sign_wkr2: extraValues.workerSign,
+      sign_sprv: extraValues.checkerSign,
+      cart_meal: extraValues.cart_meal,
+      cart_eq: extraValues.cart_eq,
+      cart_glss: extraValues.cart_glss,
+      cart_ey: extraValues.cart_ey,
+      cart_linnen: extraValues.cart_linnen,
+      cart_stset: extraValues.cart_stset,
+    };
+
+    const res = await fetch(`http://211.42.159.18:8080/api/members/${id}/complete/${step}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyData),
+    });
+
+    if (!res.ok) {
+      console.error("❌ API 응답 오류:", await res.text());
+      return;
     }
 
-    try {
-      const res = await fetch(
-        `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ value: newValue }),
-        }
-      );
+    console.log(`✅ bool_complete${step} + 주석/카트/서명 업데이트 완료`);
 
-      if (!res.ok) {
-        console.error("❌ API 응답 오류:", await res.text());
-        return;
-      }
-
-      console.log(
-        `✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`
-      );
-
-      setData((prev) =>
-        prev.map((m) =>
-          Number(m.id) === Number(id)
-            ? {
-                ...m,
-                [`bool_complete${step}`]: newValue,
-                completeDate: uiCompleteDate,
-                completeTime: uiCompleteTime,
-              }
-            : m
-        )
-      );
-    } catch (err) {
-      console.error("❌ 네트워크/로직 오류:", err);
-    }
-  };
-
+    setData((prev) =>
+      prev.map((m) =>
+        Number(m.id) === Number(id)
+          ? {
+              ...m,
+              [`bool_complete${step}`]: newValue,
+              comment: latestComment,
+              completeDate: uiCompleteDate,
+              completeTime: uiCompleteTime,
+              ...extraValues,
+            }
+          : m
+      )
+    );
+  } catch (err) {
+    console.error("❌ 네트워크 오류:", err);
+  }
+};
   if (loading) return <div>데이터 불러오는 중...</div>;
 
   return (

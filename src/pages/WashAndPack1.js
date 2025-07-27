@@ -101,8 +101,8 @@ const WashAndPack1 = () => {
   }, []);
 
   // ✅ 완료 체크 토글 → step=7 고정
-  const toggleBoolComplete = async (id, step = 7, currentValue) => {
-    const newValue = currentValue === 1 ? 0 : 1;
+    const toggleBoolComplete = async (id, step = 7, currentValue, latestComment = "", extraValues = {}) => {
+       const newValue = currentValue === 1 ? 0 : 1;
 
     // ✅ UI 업데이트용 완료일자/시간
     let uiCompleteDate = "-";
@@ -125,40 +125,43 @@ const WashAndPack1 = () => {
     }
 
     try {
-      const res = await fetch(
-        `http://211.42.159.18:8080/api/members/${id}/complete/${step}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ value: newValue }),
-        }
-      );
+    const bodyData = {
+      value: newValue,
+      comment: latestComment,            // ✅ 주석 전송
+      sign_wkr1: extraValues.workerSign, // ✅ 작업자 서명 전송
+    };
 
-      if (!res.ok) {
-        console.error("❌ API 응답 오류:", await res.text());
-        return;
-      }
+    const res = await fetch(`http://211.42.159.18:8080/api/members/${id}/complete/${step}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyData),
+    });
 
-      console.log(
-        `✅ bool_complete${step} 업데이트 성공 (id=${id}, step=${step}, newValue=${newValue})`
-      );
-
-      setData((prev) =>
-        prev.map((m) =>
-          Number(m.id) === Number(id)
-            ? {
-                ...m,
-                [`bool_complete${step}`]: newValue,
-                completeDate: uiCompleteDate,
-                completeTime: uiCompleteTime,
-              }
-            : m
-        )
-      );
-    } catch (err) {
-      console.error("❌ 네트워크/로직 오류:", err);
+    if (!res.ok) {
+      console.error("❌ API 응답 오류:", await res.text());
+      return;
     }
-  };
+
+    console.log(`✅ bool_complete${step} + 주석/서명 업데이트 완료`);
+
+    setData((prev) =>
+      prev.map((m) =>
+        Number(m.id) === Number(id)
+          ? {
+              ...m,
+              [`bool_complete${step}`]: newValue,
+              comment: latestComment,
+              signworker1: extraValues.workerSign,
+              completeDate: uiCompleteDate,
+              completeTime: uiCompleteTime,
+            }
+          : m
+      )
+    );
+  } catch (err) {
+    console.error("❌ 네트워크 오류:", err);
+  }
+};
 
   if (loading) return <div>데이터 불러오는 중...</div>;
 
