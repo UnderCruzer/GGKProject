@@ -42,7 +42,7 @@
   border: 1px solid #ccc;
   padding: 4px 6px;
   text-align: left;
-  white-space: normal;
+  white-space: nowrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
   vertical-align: top;
@@ -75,10 +75,19 @@
   text-align: center;
 }
 
+.flight-table th.col-cart-meal,
+.flight-table th.col-cart-eq,
+.flight-table th.col-cart-glss,
+.flight-table th.col-cart-ey,
+.flight-table th.col-cart-linnen,
+.flight-table th.col-cart-set {
+  white-space: nowrap;
+}
+
 @media screen and (min-width: 769px) {
   .flight-table .col-id             { width: 2.5%; text-align: center; }
   .flight-table .col-flight         { width: 4%;   text-align: center; }
-  .flight-table .col-airline        { width: 3.5%; text-align: center; }
+  .flight-table .col-airline        { width: 5%;   text-align: center; }
   .flight-table .col-destination    { width: 3%;   text-align: center; }
   .flight-table .col-aircraft       { width: 4.5%; text-align: center; }
   .flight-table .col-reg            { width: 3.5%; text-align: center; }
@@ -87,19 +96,17 @@
   .flight-table .col-start-time     { width: 3.5%; text-align: center; }
   .flight-table .col-prep-time      { width: 3.5%; text-align: center; }
   .flight-table .col-end-time       { width: 4%;   text-align: center; }
-
-  .flight-table .col-cart-meal      { width: 4%;   text-align: center; }
-  .flight-table .col-cart-eq        { width: 4%;   text-align: center; }
-  .flight-table .col-cart-glss      { width: 4%;   text-align: center; }
-  .flight-table .col-cart-ey        { width: 4%;   text-align: center; }
-  .flight-table .col-cart-linnen    { width: 5%;   text-align: center; }
-  .flight-table .col-cart-set       { width: 5%;   text-align: center; }
-
-  .flight-table .col-completed      { width: 4%;   text-align: center; white-space: normal; }
+  .flight-table .col-cart_meal      { width: 5%;   text-align: center; }
+  .flight-table .col-cart_eq        { width: 3.5%; text-align: center; }
+  .flight-table .col-cart_glss      { width: 4.5%; text-align: center; }
+  .flight-table .col-cart_ey        { width: 3.5%; text-align: center; }
+  .flight-table .col-cart_linnen    { width: 5.5%; text-align: center; }
+  .flight-table .col-cart_stset     { width: 6%;   text-align: center; }
+  .flight-table .col-completed      { width: 3.5%; text-align: center;  white-space: normal; }
   .flight-table .col-note           { width: 9%;   text-align: center; }
   /* ✅ 서명 컬럼은 조금 넓게 */
-  .flight-table .col-workerSign     { width: 8%;   text-align: center; }
-  .flight-table .col-checkerSign    { width: 8%;   text-align: center; }
+  .flight-table .col-workerSign     { width: 5%;   text-align: center; }
+  .flight-table .col-checkerSign    { width: 5%;   text-align: center; }
 
   .flight-table .col-completed-date { width: 4%;   text-align: center; }
   .flight-table .col-completed-time { width: 4%;   text-align: center; }
@@ -177,3 +184,4 @@
     font-weight: bold;
   }
 }
+
