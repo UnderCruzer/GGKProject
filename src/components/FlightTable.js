@@ -234,14 +234,10 @@ const FlightTable = ({
                     disabled={isCompleted}
                   />
                   </td>
-                  <td className="col-cart-eq"> 
+                  <td className="col-cart-eq">
                     <EditableNoteCell
                       value={comments[`${f.id}_cart_eq`] ?? f.cart_eq ?? ""}
-                      onChange={(val) => {
-                        handleCommentChange(`${f.id}_cart_eq`, val);
-                        if (onCartChange) onCartChange(f.id, 'cart_meal', val);
-                        }
-                      }
+                      onChange={(val) => handleCommentChange(`${f.id}_cart_eq`, val)}
                       disabled={isCompleted}
                     />
                   </td>
