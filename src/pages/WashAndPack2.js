@@ -25,6 +25,15 @@ const WashAndPack2 = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const handleCartChange = (id, field, value) => {
+  setData((prev) =>
+    prev.map((row) =>
+      String(row.id) === String(id)
+        ? { ...row, [field]: value }
+        : row
+      )
+    );
+  };
   const extractTime = (timeStr) => {
     if (!timeStr) return null;
 
@@ -122,7 +131,7 @@ const WashAndPack2 = () => {
 
   try {
     const target = data.find((m) => Number(m.id) === Number(id));
-    
+
     const bodyData = {
       value: newValue,
       comment: latestComment,
@@ -181,6 +190,7 @@ const WashAndPack2 = () => {
         makeOnly={true}   // ✅ 추가 UI가 필요하면 유지
         extraFields={[{ key: "workersign2", label: "작업자 서명" },  { key: "checkersign", label: "확인자 서명" }
           ]}
+        onCartChange={handleCartChange}
         // 작업자 서명
         // 확인자 서명
       />
