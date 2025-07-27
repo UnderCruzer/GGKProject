@@ -121,17 +121,19 @@ const WashAndPack2 = () => {
   }
 
   try {
+    const target = data.find((m) => Number(m.id) === Number(id));
+    
     const bodyData = {
       value: newValue,
       comment: latestComment,
       sign_wkr2: extraValues.workersign2,
       sign_sprv: extraValues.checkersign,
-      cart_meal: extraValues.cart_meal,
-      cart_eq: extraValues.cart_eq,
-      cart_glss: extraValues.cart_glss,
-      ey_cart: extraValues.ey_cart,
-      cart_linnen: extraValues.cart_linnen,
-      cart_st: extraValues.cart_st,
+      cart_meal: target?.cart_meal,
+      cart_eq: target?.cart_eq,
+      cart_glss: target?.cart_glss,
+      ey_cart: target?.ey_cart,
+      cart_linnen: target?.cart_linnen,
+      cart_st: target?.cart_st,
     };
 
     const res = await fetch(`http://211.42.159.18:8080/api/members/${id}/complete/${step}`, {
