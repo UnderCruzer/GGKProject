@@ -250,8 +250,8 @@ const FlightTable = ({
                   </td>
                   <td className="col-cart-ey">
                     <EditableNoteCell
-                      value={comments[`${f.id}_cart_ey`] ?? f.cart_ey ?? ""}
-                      onChange={(val) => handleCommentChange(`${f.id}_cart_ey`, val)}
+                      value={comments[`${f.id}_ey_cart`] ?? f.ey_cart ?? ""}
+                      onChange={(val) => handleCommentChange(`${f.id}_ey_cart`, val)}
                       disabled={isCompleted}
                     />
                   </td>
@@ -264,8 +264,8 @@ const FlightTable = ({
                   </td>
                   <td className="col-cart-set">
                     <EditableNoteCell
-                      value={comments[`${f.id}_cart_stset`] ?? f.cart_stset ?? ""}
-                      onChange={(val) => handleCommentChange(`${f.id}_cart_stset`, val)}
+                      value={comments[`${f.id}_cart_st`] ?? f.cart_st ?? ""}
+                      onChange={(val) => handleCommentChange(`${f.id}_cart_st`, val)}
                       disabled={isCompleted}
                     />
                   </td>
