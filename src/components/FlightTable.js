@@ -225,12 +225,52 @@ const FlightTable = ({
                   <td className="col-prep-time" data-label="준비시간">{f.prepDays ?? -1}</td>
                   <td className="col-end-time" data-label="작업종료">{renderCell("endTime", f.endTime)}</td>
 
-                  {makeOnly && <td className="col-cart-meal">{f.cart_meal}</td>}
-                  {makeOnly && <td className="col-cart-eq">{f.cart_eq}</td>}
-                  {makeOnly && <td className="col-cart-glss">{f.cart_glss}</td>}
-                  {makeOnly && <td className="col-cart-ey">{f.cart_ey}</td>}
-                  {makeOnly && <td className="col-cart-linnen">{f.cart_linnen}</td>}
-                  {makeOnly && <td className="col-cart-set">{f.cart_stset}</td>}
+                  {makeOnly && (
+                    <>
+                  <td className="col-cart-meal">
+                  <EditableNoteCell
+                    value={comments[`${f.id}_cart_meal`] ?? f.cart_meal ?? ""}
+                    onChange={(val) => handleCommentChange(`${f.id}_cart_meal`, val)}
+                    disabled={isCompleted}
+                  />
+                  </td>
+                  <td className="col-cart-eq">
+                    <EditableNoteCell
+                      value={comments[`${f.id}_cart_eq`] ?? f.cart_eq ?? ""}
+                      onChange={(val) => handleCommentChange(`${f.id}_cart_eq`, val)}
+                      disabled={isCompleted}
+                    />
+                  </td>
+                  <td className="col-cart-glss">
+                    <EditableNoteCell
+                      value={comments[`${f.id}_cart_glss`] ?? f.cart_glss ?? ""}
+                      onChange={(val) => handleCommentChange(`${f.id}_cart_glss`, val)}
+                      disabled={isCompleted}
+                    />
+                  </td>
+                  <td className="col-cart-ey">
+                    <EditableNoteCell
+                      value={comments[`${f.id}_cart_ey`] ?? f.cart_ey ?? ""}
+                      onChange={(val) => handleCommentChange(`${f.id}_cart_ey`, val)}
+                      disabled={isCompleted}
+                    />
+                  </td>
+                  <td className="col-cart-linnen">
+                    <EditableNoteCell
+                      value={comments[`${f.id}_cart_linnen`] ?? f.cart_linnen ?? ""}
+                      onChange={(val) => handleCommentChange(`${f.id}_cart_linnen`, val)}
+                      disabled={isCompleted}
+                    />
+                  </td>
+                  <td className="col-cart-set">
+                    <EditableNoteCell
+                      value={comments[`${f.id}_cart_stset`] ?? f.cart_stset ?? ""}
+                      onChange={(val) => handleCommentChange(`${f.id}_cart_stset`, val)}
+                      disabled={isCompleted}
+                    />
+                  </td>
+                </>
+                  )}
 
                   {/* ✅ 완료 체크 + 최신 주석 저장 */}
                   <td className="col-completed" data-label="완료">

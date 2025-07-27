@@ -95,7 +95,7 @@ const MakeAndPack2 = () => {
   const mappedMembers = members.map(mapToFlightTableData);
 
   // ✅ 완료 체크 토글 (step=1 고정) + comment 업데이트 지원
-  const toggleBoolComplete = async (id, step = 1, currentValue, comment = "") => {
+  const toggleBoolComplete = async (id, step = 2, currentValue, comment = "") => {
     const newValue = currentValue === 1 ? 0 : 1;
 
     // UI에만 표시할 완료일자/시간
