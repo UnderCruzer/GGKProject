@@ -211,7 +211,7 @@ const FlightTable = ({
                 extraValues.cart_meal = comments[`${f.id}_cart_meal`] ?? f.cart_meal ?? "";
                 extraValues.cart_eq = comments[`${f.id}_cart_eq`] ?? f.cart_eq ?? "";
                 extraValues.cart_glss = comments[`${f.id}_cart_glss`] ?? f.cart_glss ?? "";
-                extraValues.ey_cart = comments[`${f.id}_ey_cart`] ?? f.ey_cart ?? "";
+                                extraValues.ey_Cart = comments[`${f.id}_ey_Cart`] ?? f.ey_Cart ?? "";
                 extraValues.cart_linnen = comments[`${f.id}_cart_linnen`] ?? f.cart_linnen ?? "";
                 extraValues.cart_st = comments[`${f.id}_cart_st`] ?? f.cart_st ?? "";
               }
@@ -259,8 +259,8 @@ const FlightTable = ({
                   </td>
                   <td className="col-cart-ey">
                     <EditableNoteCell
-                      value={comments[`${f.id}_ey_cart`] ?? f.ey_cart ?? ""}
-                      onChange={(val) => handleCommentChange(`${f.id}_ey_cart`, val)}
+                      value={comments[`${f.id}_ey_Cart`] ?? f.ey_Cart ?? ""}
+                      onChange={(val) => handleCommentChange(`${f.id}_ey_Cart`, val)}
                       disabled={isCompleted}
                     />
                   </td>

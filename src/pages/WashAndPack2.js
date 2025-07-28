@@ -157,7 +157,14 @@ const WashAndPack2 = () => {
               comment: latestComment,
               completeDate: uiCompleteDate,
               completeTime: uiCompleteTime,
-              ...extraValues,
+              cart_meal: extraValues.cart_meal,
+              cart_eq: extraValues.cart_eq,
+              cart_glss: extraValues.cart_glss,
+              ey_Cart: extraValues.ey_Cart, 
+              cart_linnen: extraValues.cart_linnen,
+              cart_st: extraValues.cart_st,
+              workersign2: extraValues.workersign2,
+              checkersign: extraValues.checkersign,
             }
           : m
       )
