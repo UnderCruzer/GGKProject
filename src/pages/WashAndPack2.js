@@ -193,7 +193,7 @@ const WashAndPack2 = () => {
         makeOnly={true}   // ✅ 추가 UI가 필요하면 유지
         extraFields={[{ key: "workersign2", label: "작업자 서명"  },  { key: "checkersign", label: "확인자 서명" }
           ]}
-        eyCartValue={(id) => eyCartComments[id] ?? data.find(item => item.id === id)?.ey_Cart ?? ""}
+        eyCartValue={(id) => eyCartComments[id] ?? data.find(item => item.id === id)?.ey_cart ?? ""}
         onEyCartChange={handleEyCartChange}
       />
     </div>
