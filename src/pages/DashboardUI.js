@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from "react";
 import "./DashboardUI.css";
 import {
@@ -82,7 +81,7 @@ const renderPie = (data) => {
           justifyContent: "center",
           color: "#999",
           fontSize: "1.1rem"
-        }}>📭 데이터 없음</div>
+        }}>데이터 없음</div>
       )}
     </div>
   );
@@ -99,10 +98,10 @@ const renderBar = (data) => {
           <ResponsiveContainer width="95%" height={300}>
             <BarChart data={safeData} barSize={30} barGap={50}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" tick={false}/>
+              <XAxis dataKey="name" tick={false} />
               <YAxis />
-              <Bar dataKey="완료" fill="#4caf50" />
               <Bar dataKey="미완료" fill="#f44336" />
+              <Bar dataKey="완료" fill="#4caf50" />
             </BarChart>
           </ResponsiveContainer>
           <div style={{ display: "flex", justifyContent: "center", gap: "80px", marginTop: "20px" }}>
@@ -128,7 +127,7 @@ const renderBar = (data) => {
           justifyContent: "center",
           color: "#999",
           fontSize: "1.1rem"
-        }}>📭 데이터 없음</div>
+        }}>데이터 없음</div>
       )}
     </div>
   );
@@ -153,10 +152,11 @@ function DashboardUI() {
     fetchDashboardData();
   }, []);
 
-  const todayData = useMemo(() => {
-    const todayStr = new Date().toISOString().slice(0, 10);
-    return data.filter(item => item.departuredate?.startsWith(todayStr));
-  }, [data]);
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  const todayData = useMemo(() =>
+    data.filter(item => item.completeDate?.startsWith(todayStr)),
+  [data]);
 
   const weeklyData = useMemo(() => {
     const now = new Date();
@@ -165,43 +165,48 @@ function DashboardUI() {
     start.setDate(now.getDate() - day);
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
+
     return data.filter(item => {
-      const dateStr = item.departuredate;
+      const dateStr = item.completeDate;
       if (!dateStr) return false;
-      const itemDate = new Date(dateStr);
-      return itemDate >= start && itemDate <= end;
+      const d = new Date(dateStr);
+      return d >= start && d <= end;
     });
   }, [data]);
 
-  const makeStep = useMemo(() => countStepStatus(data, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4']), [data]);
-  const pickStep = useMemo(() => countStepStatus(data, ['bool_complete5','bool_complete6']), [data]);
-  const washStep = useMemo(() => countStepStatus(data, ['bool_complete7','bool_complete8']), [data]);
-  const todayStep = useMemo(() => countStepStatus(todayData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4','bool_complete5','bool_complete6','bool_complete7','bool_complete8']), [todayData]);
-  const weekStep = useMemo(() => countStepStatus(weeklyData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4','bool_complete5','bool_complete6','bool_complete7','bool_complete8']), [weeklyData]);
+  const makeToday = useMemo(() =>
+    todayData.filter(i => i.bool_complete1 || i.bool_complete2 || i.bool_complete3 || i.bool_complete4),
+  [todayData]);
 
-  const todayChart = {
-    pie: [
-      { name: "완료", value: todayStep.completedSteps },
-      { name: "미완료", value: todayStep.totalSteps - todayStep.completedSteps }
-    ],
-    bar: [{
-      name: "오늘",
-      완료: todayStep.completedSteps,
-      미완료: todayStep.totalSteps - todayStep.completedSteps
-    }]
-  };
+  const pickToday = useMemo(() =>
+    todayData.filter(i => i.bool_complete5 || i.bool_complete6),
+  [todayData]);
 
-  const weekChart = {
-    pie: [
-      { name: "완료", value: weekStep.completedSteps },
-      { name: "미완료", value: weekStep.totalSteps - weekStep.completedSteps }
-    ],
-    bar: [{
-      name: "이번 주",
-      완료: weekStep.completedSteps,
-      미완료: weekStep.totalSteps - weekStep.completedSteps
-    }]
-  };
+  const washToday = useMemo(() =>
+    todayData.filter(i => i.bool_complete7 || i.bool_complete8),
+  [todayData]);
+
+  const todayStep = useMemo(() =>
+    countStepStatus(todayData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4','bool_complete5','bool_complete6','bool_complete7','bool_complete8']),
+  [todayData]);
+
+  const weekStep = useMemo(() =>
+    countStepStatus(weeklyData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4','bool_complete5','bool_complete6','bool_complete7','bool_complete8']),
+  [weeklyData]);
+
+  const makeStep = useMemo(() =>
+    countStepStatus(makeToday, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4']),
+  [makeToday]);
+
+  const pickStep = useMemo(() =>
+    countStepStatus(pickToday, ['bool_complete5','bool_complete6']),
+  [pickToday]);
+
+  const washStep = useMemo(() =>
+    countStepStatus(washToday, ['bool_complete7','bool_complete8']),
+  [washToday]);
+
+  if (loading) return <div>데이터 불러오는 중...</div>;
 
   const makePie = [
     { name: "완료", value: makeStep.completedSteps },
@@ -230,12 +235,32 @@ function DashboardUI() {
     완료: washStep.completedSteps,
     미완료: washStep.totalSteps - washStep.completedSteps
   }];
-
-  if (loading) return <div>데이터 불러오는 중...</div>;
+  const todayChart = {
+    pie: [
+      { name: "완료", value: todayStep.completedSteps },
+      { name: "미완료", value: todayStep.totalSteps - todayStep.completedSteps }
+    ],
+    bar: [{
+      name: "오늘",
+      완료: todayStep.completedSteps,
+      미완료: todayStep.totalSteps - todayStep.completedSteps
+    }]
+  };
+  const weekChart = {
+    pie: [
+      { name: "완료", value: weekStep.completedSteps },
+      { name: "미완료", value: weekStep.totalSteps - weekStep.completedSteps }
+    ],
+    bar: [{
+      name: "이번 주",
+      완료: weekStep.completedSteps,
+      미완료: weekStep.totalSteps - weekStep.completedSteps
+    }]
+  };
 
   return (
     <div className="dashboard-ui-container">
-      <h1>✅ 공정별 + 오늘 + 주간 진행 스텝 현황 (실시간)</h1>
+      <h1>진행 스텝 현황</h1>
       <div className="department-container">
         <div className="department-card">
           <h2>이번 주 진행률</h2>
@@ -245,7 +270,7 @@ function DashboardUI() {
           </div>
         </div>
         <div className="department-card">
-          <h2>오늘 진행률</h2>
+          <h2>오늘 총 진행률</h2>
           <div className="chart-wrap">
             {renderPie(todayChart.pie)}
             {renderBar(todayChart.bar)}
