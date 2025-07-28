@@ -81,7 +81,7 @@ const WashAndPack2 = () => {
       cart_meal : item.cart_meal ?? "-",
       cart_eq : item.cart_eq ?? "-",
       cart_glss : item.cart_glss ?? "-",
-      ey_cart : item.ey_cart ?? "-",
+      ey_cart : item.ey_Cart ?? "-",
       cart_linnen : item.cart_linnen ?? "-",
       cart_st : item.cart_st ?? "-",
       comment: item.comment8 ?? "",
