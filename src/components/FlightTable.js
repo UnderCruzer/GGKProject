@@ -302,7 +302,7 @@ const FlightTable = ({
                   )}
 
                   {extraFields.map((field) => (
-                    <td key={field.key} className={`col-${field.key}`}>
+                    <td key={field.key} className={`col-${field.key}`} data-label={field.label}>
                       <EditableNoteCell
                         value={extraValues[field.key]}
                         onChange={(val) =>
@@ -313,8 +313,8 @@ const FlightTable = ({
                     </td>
                   ))}
 
-                  <td className="col-completed-date">{f.completeDate ?? "-"}</td>
-                  <td className="col-completed-time">{formatTimeHHMM(f.completeTime)}</td>
+                  <td className="col-completed-date" data-label="완료일자">{f.completeDate ?? "-"}</td>
+                  <td className="col-completed-time" data-label="완료시간">{formatTimeHHMM(f.completeTime)}</td>
                 </tr>
               );
             })}
