@@ -81,7 +81,7 @@ const WashAndPack2 = () => {
       cart_meal : item.cart_meal ?? "-",
       cart_eq : item.cart_eq ?? "-",
       cart_glss : item.cart_glss ?? "-",
-      ey_cart : item.ey_Cart ?? "-",
+      ey_Cart : item.ey_Cart ?? "-",
       cart_linnen : item.cart_linnen ?? "-",
       cart_st : item.cart_st ?? "-",
       comment: item.comment8 ?? "",
@@ -130,7 +130,7 @@ const WashAndPack2 = () => {
       cart_meal: Number(extraValues.cart_meal) || 0,
       cart_eq: Number(extraValues.cart_eq) || 0,
       cart_glss: Number(extraValues.cart_glss) || 0,
-      ey_Cart: Number(extraValues.ey_cart) || 0,
+      ey_Cart: Number(extraValues.ey_Cart) || 0,
       cart_linnen: Number(extraValues.cart_linnen) || 0,
       cart_st: Number(extraValues.cart_st) || 0,
     };
