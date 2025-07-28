@@ -175,9 +175,7 @@ const WashAndPack1 = () => {
         data={data}
         toggleBoolComplete={toggleBoolComplete}
         washOnly={true} // ✅ Wash 전용 UI 표시
-        hideNote={true} // ✅ 기본 주석 컬럼 숨기기
         extraFields={[
-          { key: "comment", label: "주석" },
           { key: "signworker1", label: "서명" },
         ]}
       />
