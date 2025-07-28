@@ -14,15 +14,15 @@ import {
 
 const COLORS = ["#4caf50", "#f44336"];
 
-const countStepStatus = (arr, keys) => {
-  let totalSteps = arr.length * keys.length;
-  let completedSteps = 0;
-  arr.forEach(item => {
-    keys.forEach(k => {
-      if (Number(item?.[k] ?? 0) === 1) completedSteps++;
-    });
+const countCompletedFlights = (flights, requiredKeys) => {
+  let completedFlightsCount = 0;
+  flights.forEach(flight => {
+    const allStepsCompleted = requiredKeys.every(key => Number(flight?.[key] ?? 0) === 1);
+    if (allStepsCompleted) {
+      completedFlightsCount++;
+    }
   });
-  return { completedSteps, totalSteps };
+  return { completedFlights: completedFlightsCount, totalFlights: flights.length };
 };
 
 const renderPie = (data) => {
@@ -152,47 +152,57 @@ function DashboardUI() {
     fetchDashboardData();
   }, []);
 
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().slice(0, 10);
 
-  const todayData = useMemo(() =>
-    data.filter(item => item.completeDate?.startsWith(todayStr)),
+  const tomorrowData = useMemo(() =>
+    data.filter(item => item.departuredate?.startsWith(tomorrowStr)),
   [data]);
 
   const weeklyData = useMemo(() => {
     const now = new Date();
-    const day = now.getDay();
-    const start = new Date(now);
-    start.setDate(now.getDate() - day);
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
+    const day = now.getDay(); // Sunday - 0, Monday - 1, ..., Saturday - 6
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - day); // Go to the most recent Sunday
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Go to the next Saturday
+    endOfWeek.setHours(23, 59, 59, 999);
 
     return data.filter(item => {
-      const dateStr = item.completeDate;
-      if (!dateStr) return false;
-      const d = new Date(dateStr);
-      return d >= start && d <= end;
+      const depDateStr = item.departuredate;
+      if (!depDateStr) return false;
+      const d = new Date(depDateStr);
+      return d >= startOfWeek && d <= endOfWeek;
     });
   }, [data]);
 
-  const weekStep = useMemo(() =>
-    countStepStatus(weeklyData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete5','bool_complete6','bool_complete7','bool_complete8']),
-  [weeklyData]);
+  const weekStep = useMemo(() => {
+    const { completedFlights, totalFlights } = countCompletedFlights(weeklyData, ['bool_complete1', 'bool_complete2', 'bool_complete3', 'bool_complete5', 'bool_complete6', 'bool_complete7', 'bool_complete8']);
+    return { completedSteps: completedFlights, totalSteps: totalFlights };
+  }, [weeklyData]);
 
-  const todayStep = useMemo(() =>
-    countStepStatus(todayData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete5','bool_complete6','bool_complete7','bool_complete8']),
-  [todayData]);
+  const todayStep = useMemo(() => {
+    const { completedFlights, totalFlights } = countCompletedFlights(tomorrowData, ['bool_complete1', 'bool_complete2', 'bool_complete3', 'bool_complete5', 'bool_complete6', 'bool_complete7', 'bool_complete8']);
+    return { completedSteps: completedFlights, totalSteps: totalFlights };
+  }, [tomorrowData]);
 
-  const makeStep = useMemo(() =>
-    countStepStatus(todayData, ['bool_complete1','bool_complete2','bool_complete3']),
-  [todayData]);
+  const makeStep = useMemo(() => {
+    const { completedFlights, totalFlights } = countCompletedFlights(tomorrowData, ['bool_complete1', 'bool_complete2', 'bool_complete3']);
+    return { completedSteps: completedFlights, totalSteps: totalFlights };
+  }, [tomorrowData]);
 
-  const pickStep = useMemo(() =>
-    countStepStatus(todayData, ['bool_complete5','bool_complete6']),
-  [todayData]);
+  const pickStep = useMemo(() => {
+    const { completedFlights, totalFlights } = countCompletedFlights(tomorrowData, ['bool_complete5', 'bool_complete6']);
+    return { completedSteps: completedFlights, totalSteps: totalFlights };
+  }, [tomorrowData]);
 
-  const washStep = useMemo(() =>
-    countStepStatus(todayData, ['bool_complete7','bool_complete8']),
-  [todayData]);
+  const washStep = useMemo(() => {
+    const { completedFlights, totalFlights } = countCompletedFlights(tomorrowData, ['bool_complete7', 'bool_complete8']);
+    return { completedSteps: completedFlights, totalSteps: totalFlights };
+  }, [tomorrowData]);
 
   if (loading) return <div>데이터 불러오는 중...</div>;
 
@@ -248,7 +258,7 @@ function DashboardUI() {
 
   return (
     <div className="dashboard-ui-container">
-      <h1>진행 스텝 현황</h1>
+      <h1>진행 스텝 현황(내일 출발 기준)</h1>
       <div className="department-container">
         <div className="department-card">
           <h2>이번 주 진행률</h2>
