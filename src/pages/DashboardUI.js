@@ -186,16 +186,16 @@ function DashboardUI() {
     todayData.filter(i => i.bool_complete7 || i.bool_complete8),
   [todayData]);
 
-  const todayStep = useMemo(() =>
-    countStepStatus(todayData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4','bool_complete5','bool_complete6','bool_complete7','bool_complete8']),
-  [todayData]);
-
   const weekStep = useMemo(() =>
-    countStepStatus(weeklyData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4','bool_complete5','bool_complete6','bool_complete7','bool_complete8']),
+    countStepStatus(weeklyData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete5','bool_complete6','bool_complete7','bool_complete8']),
   [weeklyData]);
 
+  const todayStep = useMemo(() =>
+    countStepStatus(todayData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete5','bool_complete6','bool_complete7','bool_complete8']),
+  [todayData]);
+
   const makeStep = useMemo(() =>
-    countStepStatus(makeToday, ['bool_complete1','bool_complete2','bool_complete3','bool_complete4']),
+    countStepStatus(makeToday, ['bool_complete1','bool_complete2','bool_complete3']),
   [makeToday]);
 
   const pickStep = useMemo(() =>
