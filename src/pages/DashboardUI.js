@@ -174,18 +174,6 @@ function DashboardUI() {
     });
   }, [data]);
 
-  const makeToday = useMemo(() =>
-    todayData.filter(i => i.bool_complete1 || i.bool_complete2 || i.bool_complete3 || i.bool_complete4),
-  [todayData]);
-
-  const pickToday = useMemo(() =>
-    todayData.filter(i => i.bool_complete5 || i.bool_complete6),
-  [todayData]);
-
-  const washToday = useMemo(() =>
-    todayData.filter(i => i.bool_complete7 || i.bool_complete8),
-  [todayData]);
-
   const weekStep = useMemo(() =>
     countStepStatus(weeklyData, ['bool_complete1','bool_complete2','bool_complete3','bool_complete5','bool_complete6','bool_complete7','bool_complete8']),
   [weeklyData]);
@@ -195,16 +183,16 @@ function DashboardUI() {
   [todayData]);
 
   const makeStep = useMemo(() =>
-    countStepStatus(makeToday, ['bool_complete1','bool_complete2','bool_complete3']),
-  [makeToday]);
+    countStepStatus(todayData, ['bool_complete1','bool_complete2','bool_complete3']),
+  [todayData]);
 
   const pickStep = useMemo(() =>
-    countStepStatus(pickToday, ['bool_complete5','bool_complete6']),
-  [pickToday]);
+    countStepStatus(todayData, ['bool_complete5','bool_complete6']),
+  [todayData]);
 
   const washStep = useMemo(() =>
-    countStepStatus(washToday, ['bool_complete7','bool_complete8']),
-  [washToday]);
+    countStepStatus(todayData, ['bool_complete7','bool_complete8']),
+  [todayData]);
 
   if (loading) return <div>데이터 불러오는 중...</div>;
 
