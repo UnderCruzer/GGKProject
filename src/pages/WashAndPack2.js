@@ -86,7 +86,7 @@ const WashAndPack2 = () => {
       cart_meal : item.cart_meal ?? "-",
       cart_eq : item.cart_eq ?? "-",
       cart_glss : item.cart_glss ?? "-",
-      ey_cart : eyCartComments[item.id] ?? item.ey_cart ?? "-", // ✅ eyCartComments에서 최신 값 가져오기
+      ey_Cart : eyCartComments[item.id] ?? item.ey_Cart ?? "-", // ✅ eyCartComments에서 최신 값 가져오기
       cart_linnen : item.cart_linnen ?? "-",
       cart_st : item.cart_st ?? "-",
       comment: item.comment8 ?? "",
@@ -166,7 +166,7 @@ const WashAndPack2 = () => {
               cart_meal: extraValues.cart_meal,
               cart_eq: extraValues.cart_eq,
               cart_glss: extraValues.cart_glss,
-              ey_cart: eyCartValue, 
+              ey_Cart: eyCartValue, 
               cart_linnen: extraValues.cart_linnen,
               cart_st: extraValues.cart_st,
               workersign2: extraValues.workersign2,
@@ -193,7 +193,7 @@ const WashAndPack2 = () => {
         makeOnly={true}   // ✅ 추가 UI가 필요하면 유지
         extraFields={[{ key: "workersign2", label: "작업자 서명"  },  { key: "checkersign", label: "확인자 서명" }
           ]}
-        eyCartValue={(id) => eyCartComments[id] ?? data.find(item => item.id === id)?.ey_cart ?? ""}
+        eyCartValue={(id) => eyCartComments[id] ?? data.find(item => item.id === id)?.ey_Cart ?? ""}
         onEyCartChange={handleEyCartChange}
       />
     </div>
