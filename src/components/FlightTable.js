@@ -38,14 +38,15 @@ const renderCell = (key, value) => {
 };
 
 // ✅ 완료 버튼 (최신 주석 가져오기 함수로 받기)
-const CompleteToggleButton = ({ flight, toggleBoolComplete, getLatestComment, extraValues }) => {
+const CompleteToggleButton = ({ flight, toggleBoolComplete, getLatestComment, getExtraValues, eyCartValue }) => {
   const completeField = Object.keys(flight).find((k) => k.startsWith("bool_complete"));
   const isCompleted = flight[completeField] === 1;
   const currentValue = flight[completeField] ?? 0;
 
   const handleToggle = () => {
-    const latestComment = getLatestComment(); // ✅ 항상 최신 state 읽기
-    toggleBoolComplete(flight.id, undefined, currentValue, latestComment, extraValues);
+    const latestComment = getLatestComment();
+    const currentExtraValues = getExtraValues();
+    toggleBoolComplete(flight.id, undefined, currentValue, latestComment, currentExtraValues, eyCartValue);
   };
 
   return <input type="checkbox" checked={isCompleted} onChange={handleToggle} />;
@@ -74,7 +75,10 @@ const FlightTable = ({
   washOnly = false,
   makeOnly = false,
   hideNote = false,
-  extraFields = [] 
+  extraFields = [],
+  eyCartValue = () => "",
+  onEyCartChange = () => {},
+  hideWorkTime = false
 }) => {
   const [flightFilter, setFlightFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
@@ -177,13 +181,13 @@ const FlightTable = ({
               {washOnly && <th className="col-reg">레그넘버</th>}
               <th className="col-departure-date">출발날짜</th>
               <th className="col-departure-time">출발시간</th>
-              <th className="col-start-time">작업시작</th>
-              <th className="col-prep-time">준비시간</th>
-              <th className="col-end-time">작업종료</th>
+              {!hideWorkTime && <th className="col-start-time">작업시작</th>}
+              {!hideWorkTime && <th className="col-prep-time">준비시간</th>}
+              {!hideWorkTime && <th className="col-end-time">작업종료</th>}
               {makeOnly && <th className="col-cart-meal">MEAL</th>}
               {makeOnly && <th className="col-cart-eq">EQ</th>}
               {makeOnly && <th className="col-cart-glss">GLSS</th>}
-              {makeOnly && <th className="col-cart-ey">EY</th>}
+              {makeOnly && eyCartValue && onEyCartChange && <th className="col-cart-ey">EY</th>}
               {makeOnly && <th className="col-cart-linnen">LINNEN</th>}
               {makeOnly && <th className="col-cart-set">S/T SET</th>}
               <th className="col-completed">완료</th>
@@ -207,6 +211,14 @@ const FlightTable = ({
                   comments[`${f.id}_${field.key}`] ?? f[field.key] ?? "";
               });
 
+              if (makeOnly) {
+                extraValues.cart_meal = comments[`${f.id}_cart_meal`] ?? f.cart_meal ?? "";
+                extraValues.cart_eq = comments[`${f.id}_cart_eq`] ?? f.cart_eq ?? "";
+                extraValues.cart_glss = comments[`${f.id}_cart_glss`] ?? f.cart_glss ?? "";
+                extraValues.cart_linnen = comments[`${f.id}_cart_linnen`] ?? f.cart_linnen ?? "";
+                extraValues.cart_st = comments[`${f.id}_cart_st`] ?? f.cart_st ?? "";
+              }
+
               return (
                 <tr key={f.id}>
                   <td className="col-id" data-label="ID">{f.id}</td>
@@ -221,9 +233,9 @@ const FlightTable = ({
                   {washOnly && <td className="col-reg" data-label="레그넘버">{f.regNumber}</td>}
                   <td className="col-departure-date" data-label="출발날짜">{renderCell("departureDate", f.departureDate)}</td>
                   <td className="col-departure-time" data-label="출발시간">{renderCell("departureTime", f.departureTime)}</td>
-                  <td className="col-start-time" data-label="작업시작">{renderCell("startTime", f.startTime)}</td>
-                  <td className="col-prep-time" data-label="준비시간">{f.prepDays ?? -1}</td>
-                  <td className="col-end-time" data-label="작업종료">{renderCell("endTime", f.endTime)}</td>
+                  {!hideWorkTime && <td className="col-start-time" data-label="작업시작">{renderCell("startTime", f.startTime)}</td>}
+                  {!hideWorkTime && <td className="col-prep-time" data-label="준비시간">{f.prepDays ?? -1}</td>}
+                  {!hideWorkTime && <td className="col-end-time" data-label="작업종료">{renderCell("endTime", f.endTime)}</td>}
 
                   {makeOnly && (
                     <>
@@ -234,14 +246,10 @@ const FlightTable = ({
                     disabled={isCompleted}
                   />
                   </td>
-                  <td className="col-cart-eq"> 
+                  <td className="col-cart-eq">
                     <EditableNoteCell
                       value={comments[`${f.id}_cart_eq`] ?? f.cart_eq ?? ""}
-                      onChange={(val) => {
-                        handleCommentChange(`${f.id}_cart_eq`, val);
-                        if (onCartChange) onCartChange(f.id, 'cart_meal', val);
-                        }
-                      }
+                      onChange={(val) => handleCommentChange(`${f.id}_cart_eq`, val)}
                       disabled={isCompleted}
                     />
                   </td>
@@ -252,13 +260,15 @@ const FlightTable = ({
                       disabled={isCompleted}
                     />
                   </td>
-                  <td className="col-cart-ey">
-                    <EditableNoteCell
-                      value={comments[`${f.id}_ey_cart`] ?? f.ey_cart ?? ""}
-                      onChange={(val) => handleCommentChange(`${f.id}_ey_cart`, val)}
-                      disabled={isCompleted}
-                    />
-                  </td>
+                  {eyCartValue && onEyCartChange && (
+                    <td className="col-cart-ey">
+                      <EditableNoteCell
+                        value={eyCartValue(f.id)}
+                        onChange={(val) => onEyCartChange(f.id, val)}
+                        disabled={isCompleted}
+                      />
+                    </td>
+                  )}
                   <td className="col-cart-linnen">
                     <EditableNoteCell
                       value={comments[`${f.id}_cart_linnen`] ?? f.cart_linnen ?? ""}
@@ -282,7 +292,21 @@ const FlightTable = ({
                       flight={f}
                       getLatestComment={() => comments[f.id] ?? f.comment ?? ""}
                       toggleBoolComplete={toggleBoolComplete}
-                      extraValues={extraValues}
+                      getExtraValues={() => {
+                        const currentExtraValues = {};
+                        extraFields.forEach((field) => {
+                          currentExtraValues[field.key] = comments[`${f.id}_${field.key}`] ?? f[field.key] ?? "";
+                        });
+                        if (makeOnly) {
+                          currentExtraValues.cart_meal = comments[`${f.id}_cart_meal`] ?? f.cart_meal ?? "";
+                          currentExtraValues.cart_eq = comments[`${f.id}_cart_eq`] ?? f.cart_eq ?? "";
+                          currentExtraValues.cart_glss = comments[`${f.id}_cart_glss`] ?? f.cart_glss ?? "";
+                          currentExtraValues.cart_linnen = comments[`${f.id}_cart_linnen`] ?? f.cart_linnen ?? "";
+                          currentExtraValues.cart_st = comments[`${f.id}_cart_st`] ?? f.cart_st ?? "";
+                        }
+                        return currentExtraValues;
+                      }}
+                      eyCartValue={eyCartValue(f.id)}
                     />
                   </td>
 
@@ -297,7 +321,7 @@ const FlightTable = ({
                   )}
 
                   {extraFields.map((field) => (
-                    <td key={field.key} className={`col-${field.key}`}>
+                    <td key={field.key} className={`col-${field.key}`} data-label={field.label}>
                       <EditableNoteCell
                         value={extraValues[field.key]}
                         onChange={(val) =>
@@ -308,8 +332,8 @@ const FlightTable = ({
                     </td>
                   ))}
 
-                  <td className="col-completed-date">{f.completeDate ?? "-"}</td>
-                  <td className="col-completed-time">{formatTimeHHMM(f.completeTime)}</td>
+                  <td className="col-completed-date" data-label="완료일자">{f.completeDate ?? "-"}</td>
+                  <td className="col-completed-time" data-label="완료시간">{formatTimeHHMM(f.completeTime)}</td>
                 </tr>
               );
             })}

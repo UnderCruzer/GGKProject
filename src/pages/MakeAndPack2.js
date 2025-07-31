@@ -175,6 +175,7 @@ const MakeAndPack2 = () => {
       <FlightTable
         data={mappedMembers}
         toggleBoolComplete={toggleBoolComplete}
+        hideWorkTime={true}
       />
     </div>
   );

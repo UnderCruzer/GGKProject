@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import FlightTable from "../components/FlightTable";
+import "./WashAndPack1.css";
 
 const calcTime = (baseDate, timeStr, offsetHours) => {
   if (!timeStr) return null;
@@ -166,16 +167,17 @@ const WashAndPack1 = () => {
   if (loading) return <div>데이터 불러오는 중...</div>;
 
   return (
-    <div>
+    <div className="wash-and-pack-1-container">
       <h2 style={{ textAlign: "center", margin: "20px 0", fontSize: "24px" }}>
         Wash and Pack 1
       </h2>
       <FlightTable
         data={data}
         toggleBoolComplete={toggleBoolComplete}
-        washOnly={true}  // ✅ Wash 전용 UI 표시
-        extraFields={[{ key: "signworker1", label: "작업자 서명" }]}
-        //작업자 서명
+        washOnly={true} // ✅ Wash 전용 UI 표시
+        extraFields={[
+          { key: "signworker1", label: "서명" },
+        ]}
       />
     </div>
   );

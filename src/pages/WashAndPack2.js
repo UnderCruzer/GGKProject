@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import FlightTable from "../components/FlightTable";
+import "./WashAndPack2.css";
 
 const calcTime = (baseDate, timeStr, offsetHours) => {
   if (!timeStr) return null;
@@ -24,16 +25,12 @@ const formatTime = (dateObj) => {
 const WashAndPack2 = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [eyCartComments, setEyCartComments] = useState({});
 
-  const handleCartChange = (id, field, value) => {
-  setData((prev) =>
-    prev.map((row) =>
-      String(row.id) === String(id)
-        ? { ...row, [field]: value }
-        : row
-      )
-    );
+  const handleEyCartChange = (id, newValue) => {
+    setEyCartComments((prev) => ({ ...prev, [id]: newValue }));
   };
+
   const extractTime = (timeStr) => {
     if (!timeStr) return null;
 
@@ -89,7 +86,7 @@ const WashAndPack2 = () => {
       cart_meal : item.cart_meal ?? "-",
       cart_eq : item.cart_eq ?? "-",
       cart_glss : item.cart_glss ?? "-",
-      ey_cart : item.ey_Cart ?? "-",
+      ey_cart : eyCartComments[item.id] ?? item.ey_cart ?? "-", // ✅ eyCartComments에서 최신 값 가져오기
       cart_linnen : item.cart_linnen ?? "-",
       cart_st : item.cart_st ?? "-",
       comment: item.comment8 ?? "",
@@ -117,7 +114,7 @@ const WashAndPack2 = () => {
   }, []);
 
   // ✅ 완료 체크 토글 → step=8 고정
- const toggleBoolComplete = async (id, step = 8, currentValue, latestComment = "", extraValues = {}) => {
+ const toggleBoolComplete = async (id, step = 8, currentValue, latestComment = "", extraValues = {}, eyCartValue = "") => {
   const newValue = currentValue === 1 ? 0 : 1;
 
   let uiCompleteDate = "-";
@@ -130,19 +127,17 @@ const WashAndPack2 = () => {
   }
 
   try {
-    const target = data.find((m) => Number(m.id) === Number(id));
-
     const bodyData = {
       value: newValue,
       comment: latestComment,
       sign_wkr2: extraValues.workersign2,
       sign_sprv: extraValues.checkersign,
-      cart_meal: target?.cart_meal,
-      cart_eq: target?.cart_eq,
-      cart_glss: target?.cart_glss,
-      ey_cart: target?.ey_cart,
-      cart_linnen: target?.cart_linnen,
-      cart_st: target?.cart_st,
+      cart_meal: Number(extraValues.cart_meal) || 0,
+      cart_eq: Number(extraValues.cart_eq) || 0,
+      cart_glss: Number(extraValues.cart_glss) || 0,
+      ey_cart: Number(eyCartValue) || 0,
+      cart_linnen: Number(extraValues.cart_linnen) || 0,
+      cart_st: Number(extraValues.cart_st) || 0,
     };
 
     const res = await fetch(`http://211.42.159.18:8080/api/members/${id}/complete/${step}`, {
@@ -156,7 +151,8 @@ const WashAndPack2 = () => {
       return;
     }
 
-    console.log(`✅ bool_complete${step} + 주석/카트/서명 업데이트 완료`);
+    const responseData = await res.json();
+    console.log(`✅ bool_complete${step} + 주석/카트/서명 업데이트 완료. API 응답:`, responseData);
 
     setData((prev) =>
       prev.map((m) =>
@@ -167,7 +163,14 @@ const WashAndPack2 = () => {
               comment: latestComment,
               completeDate: uiCompleteDate,
               completeTime: uiCompleteTime,
-              ...extraValues,
+              cart_meal: extraValues.cart_meal,
+              cart_eq: extraValues.cart_eq,
+              cart_glss: extraValues.cart_glss,
+              ey_cart: eyCartValue, 
+              cart_linnen: extraValues.cart_linnen,
+              cart_st: extraValues.cart_st,
+              workersign2: extraValues.workersign2,
+              checkersign: extraValues.checkersign,
             }
           : m
       )
@@ -179,7 +182,7 @@ const WashAndPack2 = () => {
   if (loading) return <div>데이터 불러오는 중...</div>;
 
   return (
-    <div>
+    <div className="wash-and-pack-2-container">
       <h2 style={{ textAlign: "center", margin: "20px 0", fontSize: "24px" }}>
         Wash and Pack 2
       </h2>
@@ -190,9 +193,8 @@ const WashAndPack2 = () => {
         makeOnly={true}   // ✅ 추가 UI가 필요하면 유지
         extraFields={[{ key: "workersign2", label: "작업자 서명"  },  { key: "checkersign", label: "확인자 서명" }
           ]}
-        onCartChange={handleCartChange}
-        // 작업자 서명
-        // 확인자 서명
+        eyCartValue={(id) => eyCartComments[id] ?? data.find(item => item.id === id)?.ey_cart ?? ""}
+        onEyCartChange={handleEyCartChange}
       />
     </div>
   );
