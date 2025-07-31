@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import FlightTable from "../components/FlightTable";
 
 // ✅ 안전한 시간 계산 함수
@@ -29,7 +29,7 @@ const PickAndPack2 = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const extractTime = (timeStr) => {
+  const extractTime = useCallback((timeStr) => {
     if (!timeStr) return null;
 
     // ISO 형식 (1900-01-01T09:00:00)
@@ -48,10 +48,10 @@ const PickAndPack2 = () => {
     }
   
     return null;
-  };
+  }, []);
   
   // ✅ 백엔드 데이터 → 화면 표시용 데이터 변환
-  const mapToFlightTableData = (item) => {
+  const mapToFlightTableData = useCallback((item) => {
     const baseDate = new Date(item.departuredate ?? "1970-01-01");
 
     const rawDepartureTime = item.departuretime ?? null;
@@ -82,8 +82,10 @@ const PickAndPack2 = () => {
       bool_complete6: item.bool_complete6 ?? 0, // ✅ PickAndPack2 전용
       completeDate: item.completeDate ?? "-",
       completeTime: extractTime(item.completeTime) ?? "-",
+      ey_cart: item.ey_cart ?? "-",
+      bc_cart: item.bc_cart ?? "-",
     };
-  };
+  }, [extractTime]);
 
   // ✅ 데이터 fetch
   useEffect(() => {
@@ -99,7 +101,7 @@ const PickAndPack2 = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [mapToFlightTableData]);
 
   // ✅ 완료 체크 토글 → step=6 고정
   const toggleBoolComplete = async (id, step = 6, currentValue) => {
@@ -170,6 +172,7 @@ const PickAndPack2 = () => {
         data={data}
         toggleBoolComplete={toggleBoolComplete}
         hideNote={true}
+        showPnp2Columns={true}
       />
     </div>
   );

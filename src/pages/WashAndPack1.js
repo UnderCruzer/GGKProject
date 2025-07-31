@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import FlightTable from "../components/FlightTable";
 import "./WashAndPack1.css";
 
@@ -26,7 +26,7 @@ const WashAndPack1 = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const extractTime = (timeStr) => {
+  const extractTime = useCallback((timeStr) => {
     if (!timeStr) return null;
 
     // ISO 형식 (1900-01-01T09:00:00)
@@ -45,10 +45,10 @@ const WashAndPack1 = () => {
     }
   
     return null;
-  };
+  }, []);
   
   // ✅ 백엔드 데이터 → 화면 표시용 데이터 변환
-  const mapToFlightTableData = (item) => {
+  const mapToFlightTableData = useCallback((item) => {
     const baseDate = new Date(item.departuredate ?? "1970-01-01");
     
     //const arrivalTime = item.arrivaltime ?? null;
@@ -83,7 +83,7 @@ const WashAndPack1 = () => {
       completeDate: item.completeDate ?? "-",
       completeTime: extractTime(item.completeTime) ?? "-",
     };
-  };
+  }, [extractTime]);
 
   // ✅ 데이터 fetch
   useEffect(() => {
@@ -99,7 +99,7 @@ const WashAndPack1 = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [mapToFlightTableData]);
 
   // ✅ 완료 체크 토글 → step=7 고정
     const toggleBoolComplete = async (id, step = 7, currentValue, latestComment = "", extraValues = {}) => {

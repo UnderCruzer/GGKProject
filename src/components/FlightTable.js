@@ -78,7 +78,8 @@ const FlightTable = ({
   extraFields = [],
   eyCartValue = () => "",
   onEyCartChange = () => {},
-  hideWorkTime = false
+  hideWorkTime = false,
+  showPnp2Columns = false
 }) => {
   const [flightFilter, setFlightFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
@@ -190,6 +191,8 @@ const FlightTable = ({
               {makeOnly && eyCartValue && onEyCartChange && <th className="col-cart-ey">EY</th>}
               {makeOnly && <th className="col-cart-linnen">LINNEN</th>}
               {makeOnly && <th className="col-cart-set">S/T SET</th>}
+              {showPnp2Columns && <th className="col-ey-cart">EY Cart</th>}
+              {showPnp2Columns && <th className="col-bc-cart">BC Cart</th>}
               <th className="col-completed">완료</th>
               {!hideNote && <th className="col-note">주석</th>}
               {extraFields.map((field) => (
@@ -284,6 +287,13 @@ const FlightTable = ({
                     />
                   </td>
                 </>
+                  )}
+
+                  {showPnp2Columns && (
+                    <>
+                      <td className="col-ey-cart" data-label="EY Cart">{f.ey_cart}</td>
+                      <td className="col-bc-cart" data-label="BC Cart">{f.bc_cart}</td>
+                    </>
                   )}
 
                   {/* ✅ 완료 체크 + 최신 주석 저장 */}

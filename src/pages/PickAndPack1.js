@@ -1,4 +1,4 @@
-  import React, { useEffect, useState } from "react";
+  import React, { useEffect, useState, useCallback } from "react";
   import FlightTable from "../components/FlightTable";
 
   const calcTime = (baseDate, timeStr, offsetHours) => {
@@ -26,7 +26,7 @@
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const extractTime = (timeStr) => {
+    const extractTime = useCallback((timeStr) => {
     if (!timeStr) return null;
 
     // ISO 형식 (1900-01-01T09:00:00)
@@ -38,48 +38,48 @@
       }
     }
   
-    // 기존 "HH:mm:ss" 또는 "HH:mm" 형식
+    // 기존 "HH:mm:ss", "HH:mm" 형식
     const parts = timeStr.split(":");
     if (parts.length >= 2) {
       return `${parts[0].padStart(2,"0")}:${parts[1].padStart(2,"0")}`;
-    }
+      }
   
     return null;
-    };
+  }, []);
     
     // ✅ 백엔드 데이터 → 화면 표시용 데이터 변환
-    const mapToFlightTableData = (item) => {
-      const baseDate = new Date(item.departuredate ?? "1970-01-01");
-      
-      // const arrivalTime = item.arrivaltime ?? null;
-      const rawDepartureTime = item.departuretime ?? null;
-      const departureTime = extractTime(rawDepartureTime);
+  const mapToFlightTableData = useCallback((item) => {
+    const baseDate = new Date(item.departuredate ?? "1970-01-01");
 
-      const startTimeObj = calcTime(baseDate, departureTime, -6);
-      const startTime = formatTime(startTimeObj);
+    const rawDepartureTime = item.departuretime ?? null;
+    const departureTime = extractTime(rawDepartureTime);
 
-      let endTime = "-";
-      if (startTimeObj) {
-        const endTimeObj = new Date(startTimeObj);
-        endTimeObj.setHours(endTimeObj.getHours() + 2);
-        endTime = formatTime(endTimeObj);
-      }
+    // ✅ 작업시작 = 출발시간 - 6시간
+    const startTimeObj = calcTime(baseDate, departureTime, -6);
+    const startTime = formatTime(startTimeObj);
 
-      return {
-        id: item.id ?? "-",
-        flight: item.flightNumber ?? "-",
-        destination: item.destination ?? "-",
-        aircraft: item.acversion ?? "-",
-        departureDate: item.departuredate ?? "-",
-        departureTime: extractTime(item.departuretime) ?? "-",
-        startTime,
-        prepDays: -1,
-        endTime,
-        bool_complete5: item.bool_complete5 ?? 0, // ✅ PickAndPack1은 bool_complete5 고정
-        completeDate: item.completeDate ?? "-",
-        completeTime: extractTime(item.completeTime) ?? "-",
-      };
+    // ✅ 작업종료 = 작업시작 + 2시간
+    let endTime = "-";
+    if (startTimeObj) {
+      const endTimeObj = new Date(startTimeObj);
+      endTimeObj.setHours(endTimeObj.getHours() + 2);
+      endTime = formatTime(endTimeObj);
+    }
+
+    return {
+      id: item.id ?? "-",
+      flight: item.flightNumber ?? "-",
+      destination: item.destination ?? "-",
+      aircraft: item.acversion ?? "-",
+      departureDate: item.departuredate ?? "-",
+      departureTime: extractTime(item.departuretime) ?? "-",
+      startTime,
+      endTime,
+      bool_complete5: item.bool_complete5 ?? 0, // ✅ PickAndPack1은 bool_complete5 고정
+      completeDate: item.completeDate ?? "-",
+      completeTime: extractTime(item.completeTime) ?? "-",
     };
+  }, [extractTime]);
 
     useEffect(() => {
       const fetchData = async () => {
@@ -94,7 +94,7 @@
         }
       };
       fetchData();
-    }, []);
+  }, [mapToFlightTableData]);
 
     // ✅ 완료 체크 토글 → step=5 고정
     const toggleBoolComplete = async (id, step = 5, currentValue) => {

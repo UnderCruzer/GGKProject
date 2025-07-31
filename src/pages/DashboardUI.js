@@ -158,7 +158,7 @@ function DashboardUI() {
 
   const tomorrowData = useMemo(() =>
     data.filter(item => item.departuredate?.startsWith(tomorrowStr)),
-  [data]);
+  [data, tomorrowStr]);
 
   const weeklyData = useMemo(() => {
     const now = new Date();

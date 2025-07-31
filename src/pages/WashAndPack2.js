@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import FlightTable from "../components/FlightTable";
 import "./WashAndPack2.css";
 
@@ -31,7 +31,7 @@ const WashAndPack2 = () => {
     setEyCartComments((prev) => ({ ...prev, [id]: newValue }));
   };
 
-  const extractTime = (timeStr) => {
+  const extractTime = useCallback((timeStr) => {
     if (!timeStr) return null;
 
     // ISO 형식 (1900-01-01T09:00:00)
@@ -50,10 +50,10 @@ const WashAndPack2 = () => {
     }
   
     return null;
-  };
+  }, []);
   
   // ✅ 백엔드 데이터 → 화면 표시용 데이터 변환
-  const mapToFlightTableData = (item) => {
+  const mapToFlightTableData = useCallback((item) => {
     const baseDate = new Date(item.departuredate ?? "1970-01-01");
     
     //const arrivalTime = item.arrivaltime ?? null;
@@ -86,7 +86,7 @@ const WashAndPack2 = () => {
       cart_meal : item.cart_meal ?? "-",
       cart_eq : item.cart_eq ?? "-",
       cart_glss : item.cart_glss ?? "-",
-      ey_cart : eyCartComments[item.id] ?? item.ey_cart ?? "-", // ✅ eyCartComments에서 최신 값 가져오기
+      cart_ey : eyCartComments[item.id] ?? item.cart_ey ?? "-", // ✅ eyCartComments에서 최신 값 가져오기
       cart_linnen : item.cart_linnen ?? "-",
       cart_st : item.cart_st ?? "-",
       comment: item.comment8 ?? "",
@@ -95,7 +95,7 @@ const WashAndPack2 = () => {
       completeDate: item.completeDate ?? "-",
       completeTime: extractTime(item.completeTime) ?? "-",
     };
-  };
+  }, [extractTime, eyCartComments]);
 
   // ✅ 데이터 fetch
   useEffect(() => {
@@ -111,7 +111,7 @@ const WashAndPack2 = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [mapToFlightTableData]);
 
   // ✅ 완료 체크 토글 → step=8 고정
  const toggleBoolComplete = async (id, step = 8, currentValue, latestComment = "", extraValues = {}, eyCartValue = "") => {
@@ -135,7 +135,7 @@ const WashAndPack2 = () => {
       cart_meal: Number(extraValues.cart_meal) || 0,
       cart_eq: Number(extraValues.cart_eq) || 0,
       cart_glss: Number(extraValues.cart_glss) || 0,
-      ey_cart: Number(eyCartValue) || 0,
+      cart_ey: Number(eyCartValue) || 0,
       cart_linnen: Number(extraValues.cart_linnen) || 0,
       cart_st: Number(extraValues.cart_st) || 0,
     };
@@ -166,7 +166,7 @@ const WashAndPack2 = () => {
               cart_meal: extraValues.cart_meal,
               cart_eq: extraValues.cart_eq,
               cart_glss: extraValues.cart_glss,
-              ey_cart: eyCartValue, 
+              cart_ey: eyCartValue, 
               cart_linnen: extraValues.cart_linnen,
               cart_st: extraValues.cart_st,
               workersign2: extraValues.workersign2,
@@ -193,7 +193,7 @@ const WashAndPack2 = () => {
         makeOnly={true}   // ✅ 추가 UI가 필요하면 유지
         extraFields={[{ key: "workersign2", label: "작업자 서명"  },  { key: "checkersign", label: "확인자 서명" }
           ]}
-        eyCartValue={(id) => eyCartComments[id] ?? data.find(item => item.id === id)?.ey_cart ?? ""}
+        eyCartValue={(id) => eyCartComments[id] ?? data.find(item => item.id === id)?.cart_ey ?? ""}
         onEyCartChange={handleEyCartChange}
       />
     </div>
