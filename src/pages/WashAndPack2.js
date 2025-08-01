@@ -60,16 +60,6 @@ const WashAndPack2 = () => {
     const rawDepartureTime = item.departuretime ?? null;
     const departureTime = extractTime(rawDepartureTime);
 
-    const startTimeObj = calcTime(baseDate, departureTime, -6);
-    const startTime = formatTime(startTimeObj);
-
-    let endTime = "-";
-    if (startTimeObj) {
-      const endTimeObj = new Date(startTimeObj);
-      endTimeObj.setHours(endTimeObj.getHours() + 2);
-      endTime = formatTime(endTimeObj);
-    }
-
     return {
       id: item.id ?? "-",
       flight: item.flightNumber ?? "-",
@@ -79,9 +69,6 @@ const WashAndPack2 = () => {
       regNumber: item.ac_Reg ?? "-",            // ✅ 레그넘버
       departureDate: item.departuredate ?? "-",
       departureTime: extractTime(item.departuretime) ?? "-",
-      startTime,
-      prepDays: -1,
-      endTime,
       bool_complete8: item.bool_complete8 ?? 0, // ✅ WashAndPack2 전용 완료 필드
       cart_meal : item.cart_meal ?? "-",
       cart_eq : item.cart_eq ?? "-",
@@ -191,6 +178,7 @@ const WashAndPack2 = () => {
         toggleBoolComplete={toggleBoolComplete}
         washOnly={true}   // ✅ Wash 전용 UI
         makeOnly={true}   // ✅ 추가 UI가 필요하면 유지
+        hideWorkTime={true} // ✅ 작업시간 관련 컬럼 숨기기
         extraFields={[{ key: "workersign2", label: "작업자 서명"  },  { key: "checkersign", label: "확인자 서명" }
           ]}
         eyCartValue={(id) => eyCartComments[id] ?? data.find(item => item.id === id)?.cart_ey ?? ""}

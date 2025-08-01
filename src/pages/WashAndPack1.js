@@ -55,16 +55,6 @@ const WashAndPack1 = () => {
     const rawDepartureTime = item.departuretime ?? null;
     const departureTime = extractTime(rawDepartureTime);
     
-    const startTimeObj = calcTime(baseDate, departureTime, -6);
-    const startTime = formatTime(startTimeObj);
-
-    let endTime = "-";
-    if (startTimeObj) {
-      const endTimeObj = new Date(startTimeObj);
-      endTimeObj.setHours(endTimeObj.getHours() + 2);
-      endTime = formatTime(endTimeObj);
-    }
-
     return {
       id: item.id ?? "-",
       flight: item.flightNumber ?? "-",
@@ -74,9 +64,6 @@ const WashAndPack1 = () => {
       regNumber: item.ac_Reg ?? "-",            // ✅ 레그넘버
       departureDate: item.departuredate ?? "-",
       departureTime: extractTime(item.departuretime) ?? "-",
-      startTime,
-      prepDays: -1,
-      endTime,
       bool_complete7: item.bool_complete7 ?? 0, // ✅ WashAndPack1 전용 완료필드
       signworker1 : item.sign_wkr1 ?? "", // ✅ 작업자 서명
       comment: item.comment7 ?? "",
@@ -175,6 +162,7 @@ const WashAndPack1 = () => {
         data={data}
         toggleBoolComplete={toggleBoolComplete}
         washOnly={true} // ✅ Wash 전용 UI 표시
+        hideWorkTime={true} // ✅ 작업시간 관련 컬럼 숨기기
         extraFields={[
           { key: "signworker1", label: "서명" },
         ]}
