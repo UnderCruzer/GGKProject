@@ -10,9 +10,9 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <h1>대시보드 페이지</h1>
+      <h1>Dashboard – Board view</h1>
       <button onClick={fetchMembers} style={{ marginLeft: '20px' }}>
-        🔄 새로고침
+        🔄 Refresh
       </button>
       <DashboardTable data={members} />
     </div>

@@ -35,16 +35,16 @@ const MainPage = () => {
       <hr className="separator" />
 
       <div className="admin-section">
-        <h2>관리자 화면</h2>
+        <h2>Administrator View</h2>
         <div className="admin-buttons-container">
           {/* 대시보드 게시판형 → 로그인 후 /dashboard 이동 */}
           <button className="admin-button" onClick={() => goToLoginWithRedirect('/dashboard')}>
-            대시보드 게시판형
+            Dashboard – Board view
           </button>
 
           {/* 대시보드 UI형 → 로그인 후 /dashboardUI 이동 */}
           <button className="admin-button" onClick={() => goToLoginWithRedirect('/dashboardUI')}>
-            대시보드 UI형
+            Dashboard – Graph view
           </button>
 
           {/* CSV Upload → 로그인 후 /file-upload 이동 */}

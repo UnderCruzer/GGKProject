@@ -78,10 +78,10 @@ const DashboardTable = ({ data }) => {
     bool_complete8: "WNP2",
   };
   
-  // ✅ 전체 완료 상태 계산 → "완료" / "미완료"
+  // ✅ 전체 완료 상태 계산 → "Complete" / "Incomplete"
   const getOverrallStatus = (member) => {
     const allDone = completeKeys.every(k => Number(member?.[k] ?? 0) === 1);
-    return allDone ? '완료' : '미완료';
+    return allDone ? 'Complete' : 'Incomplete';
   };
 
   const handleSort = (key) => {
@@ -98,8 +98,8 @@ const DashboardTable = ({ data }) => {
       const status = getOverrallStatus(item);
       const statusMatch =
         statusFilter === 'all' ||
-        (statusFilter === '완료' && status === '완료') ||
-        (statusFilter === '미완료' && status === '미완료');
+        (statusFilter === 'Complete' && status === 'Complete') ||
+        (statusFilter === 'Incomplete' && status === 'Incomplete');
       
       const depDateStr = item.departuredate?.slice(0, 10);
 
@@ -131,20 +131,20 @@ const DashboardTable = ({ data }) => {
 
   return (
     <div className="dashboard-container">
-      <h2>상세 대시보드</h2>
+      <h2>Search Option</h2>
 
       {/* ✅ 검색 + 상태 필터 */}
       <div className="dashboard-controls">
         <input
           type="text"
-          placeholder="비행편명 검색"
+          placeholder="Flight Name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-          <option value="all">전체</option>
-          <option value="완료">완료</option>
-          <option value="미완료">미완료</option>
+          <option value="all">All</option>
+          <option value="Complete">Complete</option>
+          <option value="Incomplete">Incomplete</option>
         </select>
         <DatePicker
           selected={startDate}
@@ -173,25 +173,25 @@ const DashboardTable = ({ data }) => {
           <thead>
             <tr>
               <th>ID</th>
-              <th onClick={() => handleSort('flightNumber')}>비행편명</th>
-              <th onClick={() => handleSort('destination')}>목적지</th>
-              <th onClick={() => handleSort('acversion')}>기종</th>
+              <th onClick={() => handleSort('flightNumber')}>Flight Name</th>
+              <th onClick={() => handleSort('destination')}>Destination</th>
+              <th onClick={() => handleSort('acversion')}>AC Version</th>
 
               {completeKeys.map((key) => (
                 <th key={key}>{completeKeyLabels[key] ?? key}</th>
               ))}
 
-              <th>완료 여부</th>
-              <th>출발일</th>
-              <th>출발시간</th>
-              <th>업로드일</th>
+              <th>Status</th>
+              <th>Departuredate</th>
+              <th>Departuretime</th>
+              <th>Upload Date</th>
             </tr>
           </thead>
           <tbody>
             {filteredData.map((item, idx) => {
               const overallStatus = getOverrallStatus(item); // ✅ 수정
               const statusClass =
-                overallStatus === '완료' ? 'cell-complete' : 'cell-incomplete';
+                overallStatus === 'Complete' ? 'cell-complete' : 'cell-incomplete';
 
               return (
                 <tr key={idx}>
@@ -207,7 +207,7 @@ const DashboardTable = ({ data }) => {
                     </td>
                   ))}
 
-                  {/* ✅ 완료/미완료 표시 */}
+                  {/* ✅ Complete/Incomplete 표시 */}
                   <td data-label="완료 여부" className={statusClass}>
                     {overallStatus}
                   </td>

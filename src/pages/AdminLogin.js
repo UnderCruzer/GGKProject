@@ -49,7 +49,7 @@ const AdminLogin = ({ onLogin }) => {
   return (
     <div className="login-container">
       <div className="login-wrapper">
-        <h2 className="login-title">관리자 로그인</h2>
+        <h2 className="login-title">Administrator Login</h2>
 
         <form
           className="login-box"
